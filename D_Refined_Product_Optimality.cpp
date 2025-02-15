@@ -29,7 +29,7 @@ using namespace __gnu_pbds;
 #define PI acos(-1)
 const double EPS = 1e-9;
 const ll N = 2e5 + 10;
-const ll M = 1e9 + 7;
+const ll M = 998244353;
 
 /// INLINE FUNCTIONS
 inline ll GCD(ll a, ll b) { return b == 0 ? a : GCD(b, a % b); }
@@ -108,49 +108,20 @@ namespace io{
 
 
 
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
+ll powerMod(ll x, ll y, ll p){
+    ll res = 1 % p;
+    x = x % p;
+    while (y > 0){
+        if (y & 1) res = (res * x) % p;
+        y = y >> 1;
+        x = (x * x) % p;
     }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+    return res;
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+
+ll inverseMod(ll a, ll x){
+    return powerMod(a, x - 2, x);
 }
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
 
 int main()
 {
@@ -163,6 +134,48 @@ int main()
 
     while (t--)
     {
+      ll n,q;
+      cin>>n>>q;
+      vector<ll>a(n),b(n);
+      cin>>a>>b;
+      vector<ll>c(n),d(n);
+      for(ll i=0;i<n;i++){
+        c[i]=a[i];
+        d[i]=b[i];
+      }
+      sort(all(a));
+      sort(all(b));
+      ll ans=1;
+      for(ll i=0;i<n;i++){
+        ans=(ans*min(a[i],b[i]))%M;
+      }
+      cout<<ans<<" ";
+      while (q--)
+      {
+        ll o,x;
+        cin>>o>>x;
+        x--;
+        if(o==1){
+            ll val=c[x];
+            ll big=upper_bound(all(a),val)-a.begin()-1;
+            ll neww=min(a[big],b[big]);
+            ans=(ans*inverseMod(neww,M))%M;
+            c[x]++;
+            a[big]++;
+            ans=(ans*min(a[big],b[big]))%M;
+        }
+        else{
+            ll val=d[x];
+            ll big=upper_bound(all(b),val)-b.begin()-1;
+            ll neww=min(a[big],b[big]);
+            ans=(ans*inverseMod(neww,M))%M;
+            d[x]++;
+            b[big]++;
+            ans=(ans*min(a[big],b[big]))%M;
+        }
+        cout<<ans<<" ";
+      }
+      cout<<nn;
       
     }
 

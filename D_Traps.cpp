@@ -108,49 +108,24 @@ namespace io{
 
 
 
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
+void solve() {
+    ll n, k;
+    cin >> n >> k;
+    ll ans = 0;
+    vector<ll> a(n);
+    for (ll i = 0; i < n; i++) {
+        cin >> a[i];
+        ans += a[i];
+        a[i] += i + 1;
     }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+    sort(all(a),greater<ll>());
+    for (int i = 0; i < k; i++) ans -= a[i];
+    for (int i = 0; i < k; i++) {
+        ans += n-i;
+    }
+    cout << ans << "\n";
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
+
 
 int main()
 {
@@ -163,7 +138,7 @@ int main()
 
     while (t--)
     {
-      
+      solve();
     }
 
     return 0;

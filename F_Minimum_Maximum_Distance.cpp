@@ -108,65 +108,64 @@ namespace io{
 
 
 
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
+vector<int> adj[N];
+int mark[N], dep[N], ans[N];
+ 
+void bfs(int s, int n) {
+  queue<int> q;
+  fill(dep, dep + n + 1, -1);
+  dep[s] = 0;
+  q.push(s);
+  while (!q.empty()) {
+    int u = q.front(); q.pop();
+    for (int v : adj[u]) {
+      if (dep[v] == -1) {
+        dep[v] = dep[u] + 1;
+        q.push(v);
+      }
     }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+  }
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
-int main()
-{
-    fast;
-    ll t;
-    // setIO();
-    // ll tno=1;;
-    t = 1;
-    cin >> t;
-
-    while (t--)
-    {
-      
+ 
+int main() {
+  ios::sync_with_stdio(false);
+  cin.tie(0);
+  int t;
+  cin >> t;
+  while (t--) {
+    int n, k;
+    cin >> n >> k;
+    for (int i = 1; i <= n; i++) adj[i].clear();
+    fill(mark, mark + n + 1, 0);
+    for (int i = 0; i < k; i++) {
+      int a;
+      cin >> a;
+      mark[a] = 1;
     }
-
-    return 0;
+    for (int i = 1; i < n; i++) {
+      int u, v;
+      cin >> u >> v;
+      adj[u].push_back(v);
+      adj[v].push_back(u);
+    }
+    int root = 1;
+    while (!mark[root] && root <= n) root++;
+    bfs(root, n);
+    int diam = 0, farthest = -1;
+    for (int i = 1; i <= n; i++) {
+      if (mark[i] && dep[i] > diam) {
+        diam = dep[i];
+        farthest = i;
+      }
+    }
+    bfs(farthest, n);
+    diam = 0;
+    for (int i = 1; i <= n; i++) {
+      if (mark[i]) {
+        diam = max(diam, dep[i]);
+      }
+    }
+    cout << (diam + 1) / 2 << endl;
+  }
+  return 0;
 }
-
-

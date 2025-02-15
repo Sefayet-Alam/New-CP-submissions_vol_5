@@ -106,51 +106,33 @@ namespace io{
     -> STRESS TESTING !!!!!!
 */
 
-
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
+ 
+void solve() {
+    int n, m;
+    std::cin >> n >> m;
+    
+    std::vector<int> l(n), r(n), len(n);
+    for (int i = 0; i < n; i++) {
+        std::cin >> l[i] >> r[i];
+        l[i]--;
+        len[i] = r[i] - l[i];
     }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+    
+    int ans = 0;
+    
+    int max = *std::max_element(len.begin(), len.end());
+    int min = *std::min_element(len.begin(), len.end());
+    ans = std::max(ans, max - min);
+    
+    int maxl = *std::max_element(l.begin(), l.end());
+    int minr = *std::min_element(r.begin(), r.end());
+    
+    for (int i = 0; i < n; i++) {
+        ans = std::max(ans, std::min(len[i], std::max(maxl - l[i], r[i] - minr)));
+    }
+    
+    cout<<ans*2<<nn;
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
 
 int main()
 {
@@ -163,7 +145,7 @@ int main()
 
     while (t--)
     {
-      
+      solve();
     }
 
     return 0;

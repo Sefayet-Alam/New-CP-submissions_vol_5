@@ -106,52 +106,81 @@ namespace io{
     -> STRESS TESTING !!!!!!
 */
 
-
-
-const ll B = 440;
-
-struct query
+void pro()
 {
-    int l, r, id;
-    bool operator<(const query &x) const
+
+    ll n, m ;
+    cin >> n >> m ;
+    
+    set<ll>st ;
+    map<ll,ll>mpp ;
+    vector<pll>vp, vp1, vp2, vp3 ;
+    
+    for(ll i = 0; i < n; i++)
     {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
+        ll a, b ;
+        cin >> a >> b ;
+        vp.push_back({a, b}) ;
+        st.insert(a) ;
+        st.insert(b) ;
+    }    
 
+    for(auto [a, b]: vp)
+    {
+        if(a == 1 || b == 1)continue ;
+        
+        vp2.push_back({a, b}) ;
+    }
+
+    for(auto [a, b]: vp)
+    {
+        if(a == m || b == m)continue ;
+        
+        vp3.push_back({a, b}) ;
+    }
+
+    ll j = 1 ;
+    ll mx = 0 ;
+
+    for(auto it: st)
+    {
+        mpp[it] = j++ ;
+        mx = max(mx, mpp[it]) ;
+    }
+
+    ll ara[mx + 9] = {0} ;
+    ll ara2[mx + 9] = {0} ; 
+    
+    for(auto [a, b]: vp2)
+    {
+        a = mpp[a] ;
+        b = mpp[b] ;
+        ara[a]++ ;
+        ara[b + 1]-- ;
+    }
+
+    for(auto [a, b]: vp3)
+    {
+        a = mpp[a] ;
+        b = mpp[b] ;
+        ara2[a]++ ;
+        ara2[b + 1]-- ;
+    }
+
+    ll ans = 0 ;
+
+    for(ll i = 1; i <= mx ; i++)
+    {
+
+        ara[i] += ara[i - 1] ;
+        ara2[i] += ara2[i - 1] ;
+
+        ans = max(ans, ara[i]) ;
+        ans = max(ans, ara2[i]) ;
+    }
+    cout << ans << endl ;
+}
+ 
 int main()
 {
     fast;
@@ -163,7 +192,7 @@ int main()
 
     while (t--)
     {
-      
+      pro();
     }
 
     return 0;

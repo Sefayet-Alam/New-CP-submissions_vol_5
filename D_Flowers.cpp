@@ -107,51 +107,6 @@ namespace io{
 */
 
 
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
 int main()
 {
     fast;
@@ -160,10 +115,30 @@ int main()
     // ll tno=1;;
     t = 1;
     cin >> t;
+    ll k;
+    cin>>k;
+    vector<ll>prec(N,0);
+    prec[0]=1;
+    for(ll i=1;i<N;i++){
+        prec[i]+=prec[i-1];
+        prec[i]%=M;
+        if(i>=k) prec[i]+=prec[i-k];
+        prec[i]%=M;
+    }
+    vector<ll>pref(N,0);
+    for(ll i=1;i<N;i++){
+        pref[i]+=prec[i];
+        pref[i]%=M;
+        pref[i]+=pref[i-1];
+        pref[i]%=M;
+    }
 
     while (t--)
     {
-      
+      ll a,b;
+      cin>>a>>b;
+      ll ans=(pref[b]-pref[a-1]+M)%M;
+      cout<<ans<<nn;
     }
 
     return 0;

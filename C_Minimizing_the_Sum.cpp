@@ -28,8 +28,8 @@ using namespace __gnu_pbds;
 #define md 10000007
 #define PI acos(-1)
 const double EPS = 1e-9;
-const ll N = 2e5 + 10;
-const ll M = 1e9 + 7;
+const ll N = 3e5 + 10;
+const ll M = 1e16 + 7;
 
 /// INLINE FUNCTIONS
 inline ll GCD(ll a, ll b) { return b == 0 ? a : GCD(b, a % b); }
@@ -107,50 +107,23 @@ namespace io{
 */
 
 
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
+ll n,k;
+vector<ll>vec(N);
+ll dp[N][12];
+ll func(ll i,ll remk){
+    if(i==n) return 0;
+    
+    if(dp[i][remk]!=-1) return dp[i][remk];
+    ll ret=M;
+    ret=min(ret,vec[i]+func(i+1,remk));
+    ll minm=vec[i];
+    for(ll j=1;j<=remk;j++){
+        if(i+j+1>n)break;
+        minm=min(minm,vec[i+j]);
+        ret=min(ret,minm*(j+1)+func(i+j+1,remk-j));
     }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+    return dp[i][remk]=ret;
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
 
 int main()
 {
@@ -163,7 +136,12 @@ int main()
 
     while (t--)
     {
-      
+      cin>>n>>k;
+      vec.resize(n);
+      cin>>vec;
+      for(ll i=0;i<=n;i++) for(ll j=0;j<=k+1;j++) dp[i][j]=-1;
+      ll ans=func(0,k);
+      cout<<ans<<nn;
     }
 
     return 0;

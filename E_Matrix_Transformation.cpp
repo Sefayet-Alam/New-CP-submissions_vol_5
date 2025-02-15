@@ -105,68 +105,99 @@ namespace io{
     -> Maybe take a deep breath and take a break 
     -> STRESS TESTING !!!!!!
 */
-
-
-
-const ll B = 440;
-
-struct query
+struct graph
 {
-    int l, r, id;
-    bool operator<(const query &x) const
+    int V;
+    vector<vector<int>> g;
+    vector<int> color;
+ 
+    bool dfs(int v)
     {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
+        if(color[v] != 0) return false;
+        color[v] = 1;
+        bool res = false;
+        for(auto y : g[v])
+        {
+            if(color[y] == 2) continue;
+            else if(color[y] == 0)
+                res |= dfs(y);
+            else res = true;
+        }
+        color[v] = 2;
+        return res;
     }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
+ 
+    void add_edge(int x, int y)
+    {
+        g[x].push_back(y);
+    }
+ 
+    graph(int V)
+    {
+        this->V = V;
+        this->g.resize(V);
+        this->color.resize(V);
+    };
+};
+ 
+int get_bit(int x, int y)
 {
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+    return (x >> y) & 1;
 }
-inline void add_right(int i)
+ 
+bool check(const vector<vector<int>>& a, const vector<vector<int>>& b, int k)
 {
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+    int n = a.size();
+    int m = a[0].size();
+    vector<bool> must_row(n);
+    vector<bool> must_col(m);
+    auto G = graph(n + m);
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < m; j++)
+        {
+            if(get_bit(a[i][j], k) != get_bit(b[i][j], k))
+            {
+                if(get_bit(b[i][j], k) == 0) must_row[i] = true;
+                else must_col[j] = true;
+            }
+            if(get_bit(b[i][j], k) == 0) G.add_edge(j + n, i);
+            else G.add_edge(i, j + n);
+        }                 
+    for(int i = 0; i < n; i++)
+        if(must_row[i] && G.dfs(i))
+            return false;
+    for(int j = 0; j < m; j++)
+        if(must_col[j] && G.dfs(j + n))
+            return false;
+    return true;
 }
-inline void rem_left(int i)
+ 
+void solve()
 {
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
+    int n, m;
+    scanf("%d %d", &n, &m);
+    vector<vector<int>> a(n, vector<int>(m));
+    auto b = a;
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < m; j++)
+            scanf("%d", &a[i][j]);
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < m; j++)
+            scanf("%d", &b[i][j]);
+    for(int i = 0; i < 30; i++)
+    {
+        if(!check(a, b, i))
+        {
+            puts("No");
+            return;
+        }
+    }
+    puts("Yes");
 }
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
+ 
 int main()
-{
-    fast;
-    ll t;
-    // setIO();
-    // ll tno=1;;
-    t = 1;
-    cin >> t;
-
-    while (t--)
-    {
-      
-    }
-
-    return 0;
+{                             
+    int t;
+    scanf("%d", &t);
+    for(int i = 0; i < t; i++) solve();
 }
-
-

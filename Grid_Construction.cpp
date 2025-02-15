@@ -107,51 +107,6 @@ namespace io{
 */
 
 
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
 int main()
 {
     fast;
@@ -163,7 +118,14 @@ int main()
 
     while (t--)
     {
-      
+      ll n;
+      cin>>n;
+      for(ll i=0;i<n;i++){
+        vector<ll>tmp;
+        for(ll j=1;j<=n;j++) tmp.push_back(j);
+        if(i%2) reverse(all(tmp));
+        cout<<tmp<<nn;
+      }
     }
 
     return 0;

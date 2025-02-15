@@ -107,51 +107,6 @@ namespace io{
 */
 
 
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
 int main()
 {
     fast;
@@ -163,7 +118,34 @@ int main()
 
     while (t--)
     {
-      
+      ll n,m;
+      cin>>n>>m;
+      if(m>=2*n) cout<<"NO"<<nn;
+      else {
+        cout<<"YES"<<nn;
+        vector<ll>alls;
+        for(ll i=1;i<=n;i++){
+            alls.push_back(i);
+            alls.push_back(i);
+        }
+        ll sz=alls.size();
+        for(ll i=0;i<sz;i++) alls.push_back(alls[i]);
+        sz=alls.size();
+        for(ll i=0;i<sz;i++) alls.push_back(alls[i]);
+        // deb(alls);
+        
+        vector<ll>now;
+        ll st=0;
+        ll en=m-1;
+        for(ll i=0;i<2*n;i++){
+            for(ll j=st;j<=en;j++){
+                cout<<alls[j]<<" ";
+            }
+            cout<<nn;
+            st++;
+            en++;
+        }
+      }
     }
 
     return 0;

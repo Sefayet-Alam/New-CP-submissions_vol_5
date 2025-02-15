@@ -107,51 +107,6 @@ namespace io{
 */
 
 
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
 int main()
 {
     fast;
@@ -159,11 +114,57 @@ int main()
     // setIO();
     // ll tno=1;;
     t = 1;
-    cin >> t;
+    // cin >> t;
 
     while (t--)
     {
+      ll n,m;
+      cin>>n>>m;
+      ll fre=m;
+      ll x;
+      ll ans=0;
+      vector<ll>a(n);
+      cin>>a;
+      sort(all(a));
+      vector<ll>vec;
+      ll l=0,r=n-1;
+      while (l<r)
+      {
+        vec.push_back(a[r]);
+        vec.push_back(a[l]);
+        l++;
+        r--;
+      }
+      if(l==r) vec.push_back(a[l]);
+      deb(vec);
+      PQ<ll>pqq;
+      for(ll i=0;i<n;i++){
+        x=vec[i];
+       
+        if(fre<x){
+            while (fre<x && pqq.size())
+            {
+                
+                ans++;
+                fre+=pqq.top();
+                pqq.pop();
+            }
+        }
+        ans+=x;
+        
+        for(ll j=1;j<=x;j++){
+            if(pqq.size()){
+                fre+=pqq.top();
+                pqq.pop();
+            }
+            else break;
+        }
+        pqq.push(x);
+        fre-=x;
+        
+      }
       
+      cout<<ans+pqq.size()<<nn;
     }
 
     return 0;

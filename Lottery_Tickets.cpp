@@ -107,51 +107,6 @@ namespace io{
 */
 
 
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
 int main()
 {
     fast;
@@ -163,7 +118,41 @@ int main()
 
     while (t--)
     {
-      
+      ll n;
+      cin>>n;
+      vector<ll>vec(n);
+      cin>>vec;
+      ll st=vec[0];
+      sort(all(vec));
+      ll pos=0;
+      ll maxm=1e6;
+      for(ll i=0;i<n;i++){
+        if(vec[i]==st) pos=i;
+      }
+    
+      if(pos==0){
+        ll nxt=vec[pos+1];
+        ll mid1=vec[pos]+(nxt-vec[pos])/2;
+       
+        ll ans=mid1-1+1;
+        
+        cout<<ans<<nn;
+      }
+      else if(pos==n-1){
+        ll prev=vec[pos-1];
+        ll mid2=vec[pos]-(vec[pos]-prev)/2;
+         
+        ll ans=maxm-mid2+1;
+        cout<<ans<<nn;
+      }
+      else{
+        ll nxt=vec[pos+1];
+        ll mid1=vec[pos]+(nxt-vec[pos])/2;
+        ll prev=vec[pos-1];
+        ll mid2=vec[pos]-(vec[pos]-prev)/2;
+        
+        cout<<mid1-mid2+1<<nn;
+      }
     }
 
     return 0;

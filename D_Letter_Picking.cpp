@@ -105,52 +105,7 @@ namespace io{
     -> Maybe take a deep breath and take a break 
     -> STRESS TESTING !!!!!!
 */
-
-
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
+string s;
 
 int main()
 {
@@ -163,6 +118,22 @@ int main()
 
     while (t--)
     {
+      ll n;
+    //   cin>>n;
+      cin>>s;
+      n=s.size();
+      ll l=0,r=n-1;
+      while (l<=r && s[l]==s[r])
+      {
+        l++;
+        r--;
+      }
+      while (l<=r && s[l]==s[l+1])
+      {
+        l+=2;
+      }
+      if(l<r) cout<<"Alice"<<nn;
+      else cout<<"Draw"<<nn;
       
     }
 

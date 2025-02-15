@@ -28,7 +28,7 @@ using namespace __gnu_pbds;
 #define md 10000007
 #define PI acos(-1)
 const double EPS = 1e-9;
-const ll N = 2e5 + 10;
+const ll N = 1e5 + 10;
 const ll M = 1e9 + 7;
 
 /// INLINE FUNCTIONS
@@ -106,51 +106,44 @@ namespace io{
     -> STRESS TESTING !!!!!!
 */
 
+/// BIT MANIPULATION
+
+#define Set(x, k) (x |= (1LL << k))
+#define Unset(x, k) (x &= ~(1LL << k))
+#define Check(x, k) (x & (1LL << k))
+#define Toggle(x, k) (x ^ (1LL << k))
+
+int popcount(ll x) { return __builtin_popcountll(x); };
+int poplow(ll x) { return __builtin_ctzll(x); };
+int pophigh(ll x) { return 63 - __builtin_clzll(x); };
 
 
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
+ll n;
+vector<ll>a(N),g(N);
+ll dp[18][N];
+ll func(ll lst,ll msk){
+    if(popcount(msk)==n){
+        return 0;
     }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+    if(dp[lst][msk]!=-1) return dp[lst][msk];
+    ll ret=0;
+    if(msk==0){
+        for(ll j=0;j<n;j++){
+            if(Check(msk,j)) continue;
+            ret=max(ret,1+func(j,(msk|(1LL<<j))));
+        }
+    }
+    else{
+        for(ll j=0;j<n;j++){
+            if(!Check(msk,j)){
+                if(a[lst]==a[j] || g[lst]==g[j]){
+                    ret=max(ret,1+func(j,(msk|(1LL<<j))));
+                }
+            }
+        }
+    }
+    return dp[lst][msk]=ret;
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
 
 int main()
 {
@@ -163,7 +156,36 @@ int main()
 
     while (t--)
     {
-      
+      cin>>n;
+      a.resize(n);
+      g.resize(n);
+      map<string,ll>mpp,mpp2;
+      ll cnt=1,cnt2=1;
+      for(ll i=0;i<n;i++){
+        string s,p;
+        cin>>s>>p;
+        if(mpp.find(s)!=mpp.end()){
+            a[i]=mpp[s];
+        }
+        else{
+            a[i]=cnt;
+            mpp[s]=cnt;
+            cnt++;
+        }
+        if(mpp2.find(p)!=mpp2.end()){
+            g[i]=mpp2[p];
+        }
+        else{
+            g[i]=cnt2;
+            mpp2[p]=cnt2;
+            cnt2++;
+        }
+      }
+      for(ll i=0;i<=n;i++){
+        for(ll j=0;j<=(1LL<<n)+5;j++) dp[i][j]=-1;
+      }
+      ll ans=func(0,0);
+      cout<<n-ans<<nn;
     }
 
     return 0;

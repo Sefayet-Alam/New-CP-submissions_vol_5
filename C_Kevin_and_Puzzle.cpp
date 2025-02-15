@@ -29,7 +29,7 @@ using namespace __gnu_pbds;
 #define PI acos(-1)
 const double EPS = 1e-9;
 const ll N = 2e5 + 10;
-const ll M = 1e9 + 7;
+const ll M = 998244353;
 
 /// INLINE FUNCTIONS
 inline ll GCD(ll a, ll b) { return b == 0 ? a : GCD(b, a % b); }
@@ -105,53 +105,40 @@ namespace io{
     -> Maybe take a deep breath and take a break 
     -> STRESS TESTING !!!!!!
 */
-
-
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
+ll n;
+vector<ll>vec(N);
+ll dp[N][3];
+ll func(ll i,ll f){
+    //f=0 honest
+    if(i==n) return dp[i][f]=1;
+    
+    if(dp[i][f]!=-1) return dp[i][f];
+    ll ret=0;
+    if(vec[i]>i){
+        if(!f || i==0) ret=(ret+func(i+1,1))%M;
     }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+    else if(i==0){
+        ret=(ret+func(i+1,1))%M;
+        ret=(ret+func(i+1,0))%M;
+    }
+    else if(f==1){
+        //prev liar and false
+        if(i>1){
+            if(vec[i]==vec[i-2]+1) ret=(ret+func(i+1,0))%M;
+        }
+        else if(vec[i]==1) ret=(ret+func(i+1,0))%M;
+    }
+    else{
+        if(vec[i]==vec[i-1]){
+            ret=(ret+func(i+1,0))%M;
+            ret=(ret+func(i+1,1))%M;
+        }
+        else{
+            ret=(ret+func(i+1,1))%M;
+        }
+    }
+    return dp[i][f]=ret;
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
 int main()
 {
     fast;
@@ -163,7 +150,17 @@ int main()
 
     while (t--)
     {
-      
+      cin>>n;
+      vec.resize(n);
+      cin>>vec;
+      for(ll i=0;i<=n+2;i++){
+        dp[i][0]=-1;
+        dp[i][1]=-1;
+        dp[i][2]=-1;
+      }
+      ll ans=func(0,0);
+    //   deb(ans);
+      cout<<ans<<nn;
     }
 
     return 0;

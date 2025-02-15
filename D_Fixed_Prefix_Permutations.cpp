@@ -13,7 +13,6 @@ using namespace __gnu_pbds;
 #define ll long long
 #define SZ(a) (int)a.size()
 #define UNIQUE(a) (a).erase(unique(all(a)), (a).end())
-#define mp make_pair
 #define mem(a, b) memset(a, b, sizeof(a))
 #define all(x) x.begin(), x.end()
 
@@ -107,51 +106,6 @@ namespace io{
 */
 
 
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
 int main()
 {
     fast;
@@ -160,10 +114,37 @@ int main()
     // ll tno=1;;
     t = 1;
     cin >> t;
-
+    
     while (t--)
     {
-      
+        ll n, m;
+        cin>>n>>m;
+        map <ll, ll> mp;
+        vector <vector<ll>> x;
+        for(ll i=0;i<n;i++){
+            vector <ll> y(m+1);
+            for(ll j=1;j<=m;j++) cin>>y[j];
+            vector <ll> pos(m+1);
+            for(ll j=1;j<=m;j++) pos[y[j]]=j;
+            ll num=0;
+            for(ll j=1;j<=m;j++){
+                num=num*10+pos[j];
+                mp[num]=1;
+            }
+            x.push_back(y);
+        }
+        for(ll i=0;i<n;i++){
+            ll num=0;
+            ll mx=0;
+            for(ll j=1;j<=m;j++){
+                num=num*10+x[i][j];
+                if(mp.find(num)!=mp.end()){
+                    mx=max(mx, j);
+                }
+            }
+            cout<<mx<<" ";
+        }
+        cout<<nn;
     }
 
     return 0;

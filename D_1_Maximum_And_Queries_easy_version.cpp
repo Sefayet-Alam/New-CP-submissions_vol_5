@@ -106,52 +106,16 @@ namespace io{
     -> STRESS TESTING !!!!!!
 */
 
+/// BIT MANIPULATION
 
+#define Set(x, k) (x |= (1LL << k))
+#define Unset(x, k) (x &= ~(1LL << k))
+#define Check(x, k) (x & (1LL << k))
+#define Toggle(x, k) (x ^ (1LL << k))
 
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
+int popcount(ll x) { return __builtin_popcountll(x); };
+int poplow(ll x) { return __builtin_ctzll(x); };
+int pophigh(ll x) { return 63 - __builtin_clzll(x); };
 int main()
 {
     fast;
@@ -159,10 +123,34 @@ int main()
     // setIO();
     // ll tno=1;;
     t = 1;
-    cin >> t;
+    // cin >> t;
 
     while (t--)
     {
+      ll n,q;
+      cin>>n>>q;
+    
+      vector<ll>vec(n);
+      cin>>vec;
+      while (q--)
+      {
+        ll k;
+        cin>>k;
+        ll curans=0;
+        for(ll b=60;b>=0;b--){
+            ll tar= (curans|(1LL<<b));
+            ll ops_left=k;
+            for(ll i=0;i<n;i++){
+                if((tar & ~vec[i])==0) continue;
+                ll msmatch=pophigh(tar & ~vec[i]);
+                ll newa=(vec[i] & -(1LL<<(msmatch+1)))|tar;
+                ops_left-=(newa-vec[i]);
+                if(ops_left<0) break;
+            }
+            if(ops_left>=0) curans=tar;
+        }
+        cout<<curans<<nn;
+      }
       
     }
 

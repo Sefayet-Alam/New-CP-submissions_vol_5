@@ -106,67 +106,30 @@ namespace io{
     -> STRESS TESTING !!!!!!
 */
 
-
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+int ask (int x) {
+    cout << "- " << x << endl;
+    if (x == -1)
+        exit(0);
+    cin >> x;
+    return x;
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
-int main()
-{
-    fast;
-    ll t;
-    // setIO();
-    // ll tno=1;;
-    t = 1;
+ 
+int main() {
+    int t;
     cin >> t;
-
-    while (t--)
-    {
-      
+    while (t--) {
+        int cnt;
+        cin >> cnt;
+        int n = 0;
+        int was = 0;
+        while (cnt > 0) {
+            n += 1;
+            int nw = ask(1 + was);
+            int back = nw - cnt + 1;
+            n += (1 << back) - 1;
+            was = (1 << back) - 1;
+            cnt = nw - back;
+        }
+        cout << "! " << n << endl;
     }
-
-    return 0;
 }
-
-

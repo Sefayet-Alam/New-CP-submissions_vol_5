@@ -107,51 +107,6 @@ namespace io{
 */
 
 
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
 int main()
 {
     fast;
@@ -159,11 +114,33 @@ int main()
     // setIO();
     // ll tno=1;;
     t = 1;
-    cin >> t;
+    // cin >> t;
 
     while (t--)
     {
-      
+      ll n;
+      cin>>n;
+      vector<ll>vec(n);
+      cin>>vec;
+      ll tot=accumulate(all(vec),0LL);
+      if(tot%3) cout<<0<<nn;
+      else{
+        tot=tot/3;
+        vector<ll>cnt(n,0);
+        ll s=0;
+        for(ll i=n-1;i>=0;i--){
+            s+=vec[i];
+            if(s==tot) cnt[i]=1;
+        }
+        for(ll i=n-2;i>=0;i--) cnt[i]+=cnt[i+1];
+        ll cur=0;
+        ll ans=0;
+        for(ll i=0;i<n-2;i++){
+            cur+=vec[i];
+            if(cur==tot) ans+=cnt[i+2]; 
+        }
+        cout<<ans<<nn;
+      }
     }
 
     return 0;

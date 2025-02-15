@@ -106,51 +106,23 @@ namespace io{
     -> STRESS TESTING !!!!!!
 */
 
-
-
-const ll B = 440;
-
-struct query
+vector<bool> Primes(N,1);
+vector<ll>primenos;
+void SieveOfEratosthenes(ll n)
 {
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
+    Primes[1]=0;
+    for (ll i=2;i*i<=n;i++) {
+    if(Primes[i]==1){     
+    for(ll j=i*i;j<=n;j+=i)
+        Primes[j]=0;
+        }
     }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+    for(ll i=1;i<n;i++){
+        if(Primes[i]){
+            primenos.push_back(i);
+        }
+    }
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
 
 int main()
 {
@@ -160,10 +132,17 @@ int main()
     // ll tno=1;;
     t = 1;
     cin >> t;
-
+   
     while (t--)
     {
-      
+      ll n,k;
+      cin>>n>>k;
+      ll g=GCD(n,k);
+      bool f=0;
+      if(n%4==0) f=1;
+      if(g>2) f=1;
+      if(f) cout<<"No"<<nn;
+      else cout<<"Yes"<<nn;
     }
 
     return 0;

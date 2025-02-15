@@ -107,66 +107,73 @@ namespace io{
 */
 
 
-
-const ll B = 440;
-
-struct query
+ll n, k;
+vector<ll> vec(N);
+ll dp[N][21];
+ll func(ll i, ll remk)
 {
-    int l, r, id;
-    bool operator<(const query &x) const
+    if (i == n)
     {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
+        return 0;
     }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+    if(dp[i][remk]!=-1) return dp[i][remk];
+    ll ret = M*M ;
+    ll now=0;
+    for(ll j=i;j<n;j++){
+        now+=(vec[i]-vec[j])*(vec[i]-vec[j]);
+        if(remk) ret=min(ret,now+func(j+1,remk-1));
+    }
+    return dp[i][remk]=ret;
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
 
+set<ll>ds;
+void recursion(ll i,ll remk){
+    if (i == n)
+    {
+        return;
+    }
+
+    ll now=0;
+    ll nxt=-1;
+    ll ret=M*M;
+    for(ll j=i;j<n;j++){
+        now+=(vec[i]-vec[j])*(vec[i]-vec[j]);
+        if(remk){
+            ll cur=now+func(j+1,remk-1);
+            if(cur<ret){
+                ret=cur;
+                nxt=j+1;
+            }
+        }
+    }
+    if(nxt!=-1){
+        ds.insert(vec[i]);
+        recursion(nxt,remk-1);
+    }
+}
 int main()
 {
     fast;
-    ll t;
-    // setIO();
-    // ll tno=1;;
-    t = 1;
-    cin >> t;
-
-    while (t--)
-    {
-      
+    cin >> n >> k;
+    vec.resize(n);
+    for(ll i=0;i<n;i++){
+        cin>>vec[i];
     }
+    vector<ll>vec2=vec;
+    sort(all(vec));
+    reverse(all(vec));
+    mem(dp,-1);
+    ll ans=func(0,k);
+    // deb(ans);
+    ds.insert(vec[0]);
+    recursion(0,k);
+    // deb(ds);
+    for(ll i=0;i<n;i++){
+        cout<<*ds.lower_bound(vec2[i])<<" ";
+    }
+    cout<<nn;
+    
 
     return 0;
 }
-
 

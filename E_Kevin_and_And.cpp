@@ -106,51 +106,60 @@ namespace io{
     -> STRESS TESTING !!!!!!
 */
 
-
-
-const ll B = 440;
-
-struct query
+void Solve() 
 {
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
+    ll n, m, k; 
+    cin >> n >> m >> k;
+    
+    vector <ll> a(n + 1), b(m + 1);
+    for (ll i = 1; i <= n; i++){
+        cin >> a[i];
     }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+    for (ll i = 1; i <= m; i++){
+        cin >> b[i];
+    }
+    
+    vector<vector<ll>> c(n + 1, vector<ll>(m + 1, M*M));
+    vector <ll> gg(1LL << m);
+    
+    for (ll i = 0; i < (1LL << m); i++){
+        ll v = 1LL << 32;
+        v -= 1;
+        for (ll j = 0; j < m; j++){
+            if (i >> j & 1){
+                v &= b[j + 1];
+            }
+        }
+        gg[i] = v;
+        // cout << gg[i] << " ";
+    }
+    // cout << "\n";
+    
+    for (ll i = 1; i <= n; i++){
+        for (ll j = 0; j < (1LL << m); j++){
+            ll v = __builtin_popcount(j);
+            
+            // cout << i << " " << j << " " << (gg[j] & a[i]) << "\n";
+            c[i][v] = min(c[i][v], gg[j] & a[i]);
+        }
+    }
+    
+    ll ans = 0;
+    vector <ll> d;
+    for (ll i = 1; i <= n; i++){
+        ans += c[i][0];
+        for (ll j = 1; j <= m; j++){
+            d.push_back(c[i][j - 1] - c[i][j]);
+        }
+    }
+    
+    sort(d.begin(), d.end(),greater<ll>());
+    for (ll i = 0; i < k; i++){
+        ans -= d[i];
+    }
+    
+    cout << ans << "\n";
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
 
 int main()
 {
@@ -163,7 +172,7 @@ int main()
 
     while (t--)
     {
-      
+      Solve();
     }
 
     return 0;

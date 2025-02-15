@@ -106,51 +106,54 @@ namespace io{
     -> STRESS TESTING !!!!!!
 */
 
-
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
+void solve() {
+    ll n;
+    cin >> n;
+    
+    vector<ll> a(n);
+    cin>>a;
+    // deb(a);
+    ll ans = -1;
+    ll f = 0;
+    ll p = -1;
+    for (ll i = 0; i < n; i++) {
+        if (a[i] > a[(i + 1) % n]) {
+            f += 1;
+            p = i + 1;
+        }
     }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+    // deb2(p,f);
+
+    if (f == 0) {
+        ans = 0;
+    } 
+    else if (f == 1) {
+        ll res = min(p + 2, n - p);
+        
+        if (ans == -1 || ans > res) {
+            ans = res;
+        }
+    }
+    f = 0;
+    
+    for (ll i = 0; i < n; i++) {
+        if (a[i] < a[(i + 1) % n]) {
+            f += 1;
+            p = i + 1;
+        }
+    }
+
+    if (f == 0) {
+        ans = 0;
+    } 
+    else if (f == 1) {
+        ll res = min(p + 1, n - p + 1);
+        if (ans == -1 || ans > res) {
+            ans = res;
+        }
+    }
+    cout << ans << nn;
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
 
 int main()
 {
@@ -163,7 +166,7 @@ int main()
 
     while (t--)
     {
-      
+        solve();
     }
 
     return 0;

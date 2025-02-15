@@ -105,53 +105,11 @@ namespace io{
     -> Maybe take a deep breath and take a break 
     -> STRESS TESTING !!!!!!
 */
-
-
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+ll n,m;
+bool cmp(pll a,pll b){
+    
+    return m*b.second>m*a.second;
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
 int main()
 {
     fast;
@@ -164,6 +122,32 @@ int main()
     while (t--)
     {
       
+      cin>>n>>m;
+      vector<pll>alls;
+      for(ll i=0;i<n;i++){
+        ll prev=0;
+        ll val=0;
+        for(ll j=0;j<m;j++){
+            ll x;
+            cin>>x;
+            val+=prev+x;
+            prev+=x;
+        }
+        alls.push_back({val,prev});
+      }
+      sort(all(alls),cmp);
+      reverse(all(alls));
+      
+    //   for(auto it:alls) deb(it);
+      ll ans=0;
+      ll prev=0;
+      for(ll i=0;i<alls.size();i++){
+        // deb2(i,prev);
+        ans+=prev*m+alls[i].first;
+        prev+=alls[i].second;
+        
+      }
+      cout<<ans<<nn;
     }
 
     return 0;

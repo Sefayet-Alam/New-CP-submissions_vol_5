@@ -28,7 +28,7 @@ using namespace __gnu_pbds;
 #define md 10000007
 #define PI acos(-1)
 const double EPS = 1e-9;
-const ll N = 2e5 + 10;
+const ll N = 2e6 + 10;
 const ll M = 1e9 + 7;
 
 /// INLINE FUNCTIONS
@@ -106,52 +106,70 @@ namespace io{
     -> STRESS TESTING !!!!!!
 */
 
+vector<int> smallest_factor;
+vector<bool> prime;
+vector<int> primes;
 
+vector<ll>gcds[N];
+vector<ll>g[N];
+vector<ll>vec(N);
 
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
+void sieve(int maximum) {
+    maximum = max(maximum, 2);
+    smallest_factor.assign(maximum + 1, 0);
+    prime.assign(maximum + 1, true);
+    prime[0] = prime[1] = false;
+    primes = {2};
+ 
+    for (int p = 2; p <= maximum; p += 2) {
+        prime[p] = p == 2;
+        smallest_factor[p] = 2;
     }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+ 
+    for (int p = 3; p * p <= maximum; p += 2)
+        if (prime[p])
+            for (int i = p * p; i <= maximum; i += 2 * p)
+                if (prime[i]) {
+                    prime[i] = false;
+                    smallest_factor[i] = p;
+                }
+ 
+    for (int p = 3; p <= maximum; p += 2)
+        if (prime[p]) {
+            smallest_factor[p] = p;
+            primes.push_back(p);
+        }
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
 
+ll dp[N];
+ll func(ll i){
+    if(dp[i]!=-1) return dp[i];
+    ll ret=1;
+    for(auto it:g[i]){
+        ret=max(ret,1+func(it));
+    }
+    return dp[i]=ret;
+}
+
+vector<ll>stt;
+void recur(ll i){
+    ll ret=1;
+    ll nxt=-1;
+    for(auto it:g[i]){
+        ll now=1+func(it);
+        if(now>=ret){
+            ret=now;
+            nxt=it;
+        }
+    }
+    if(nxt!=-1){
+        stt.push_back(nxt+1);
+        recur(nxt);
+    }
+}
+bool cmp(ll a,ll b){
+    return vec[a]<vec[b];
+}
 int main()
 {
     fast;
@@ -159,14 +177,62 @@ int main()
     // setIO();
     // ll tno=1;;
     t = 1;
-    cin >> t;
-
+    // cin >> t;
+    sieve(N);
+    mem(dp,-1);
     while (t--)
     {
-      
+      ll n;
+      cin>>n;
+      vec.resize(n);
+      cin>>vec;
+      set<ll>ps;
+      map<ll,ll>freq;
+      for(ll i=0;i<n;i++){
+        if(freq[vec[i]]) vec[i]=0;
+        freq[vec[i]]++;
+      }
+      for(ll i=0;i<n;i++){
+        ll x=vec[i];
+        while (x>1)
+        {
+            ll p=smallest_factor[x];
+            ps.insert(p);
+            gcds[p].push_back(i);
+            while (x%p==0)
+            {
+                x/=p;
+            }
+        }
+      }
+      for(auto it:ps){
+        vector<ll> now;
+        for(auto it2:gcds[it]) now.push_back(it2);
+        sort(all(now),cmp);
+        // deb(now);
+        for(ll i=0;i<now.size()-1;i++){
+            ll cur=vec[now[i]];
+            ll nxt=vec[now[i+1]];
+            if(nxt>cur) g[now[i]].push_back(now[i+1]);
+        }
+      }
+      ll ans=0;
+      ll st=-1;
+      for(ll i=0;i<n;i++){
+        // deb(g[i]);
+        ll cur=func(i);
+        if(cur>ans){
+            ans=cur;
+            st=i;
+        }
+      }
+      if(st!=-1){
+        stt.push_back(st+1);
+        recur(st);
+      }
+      cout<<stt.size()<<nn;
+      cout<<stt<<nn;
     }
 
     return 0;
 }
-
-

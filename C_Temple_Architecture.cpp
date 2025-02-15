@@ -107,51 +107,6 @@ namespace io{
 */
 
 
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
 int main()
 {
     fast;
@@ -159,11 +114,62 @@ int main()
     // setIO();
     // ll tno=1;;
     t = 1;
-    cin >> t;
+    // cin >> t;
 
     while (t--)
     {
+      ll n;
+      cin>>n;
+      vector<ll>vec(n);
+      cin>>vec;
+    
+      vector<ll>left(n,-1),right(n,-1);
+      stack<ll>stk;
+      for(ll i=0;i<n;i++){
+        ll now=vec[i];
+        while (stk.size() && vec[stk.top()]<=now)
+        {
+            stk.pop();
+        }
+        if(stk.size()){
+            left[i]=stk.top();
+        }
+        stk.push(i);
+      }
+      while (stk.size())
+      {
+        stk.pop();
+      }
       
+      for(ll i=n-1;i>=0;i--){
+        ll now=vec[i];
+        while (stk.size() && vec[stk.top()]<=now)
+        {
+            stk.pop();
+        }
+        if(stk.size()){
+            right[i]=stk.top();
+        }
+        stk.push(i);
+      }
+    //   deb2(left,right);
+      ll maxm=*max_element(all(vec));
+      ll ans=0;
+      for(ll i=0;i<n;i++){
+        if(left[i]==-1 && right[i]==-1) continue;
+        else if(left[i]==-1){
+            ans+=right[i]-i;
+        }
+        else if(right[i]==-1){
+            ans+=i-left[i];
+        }
+        else{
+            ll a=(right[i]-i);
+            ll b=(i-left[i]);
+            ans+=min(a,b);
+        }
+      }
+      cout<<ans<<nn;
     }
 
     return 0;

@@ -107,51 +107,6 @@ namespace io{
 */
 
 
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
 int main()
 {
     fast;
@@ -163,7 +118,49 @@ int main()
 
     while (t--)
     {
+      ll n,m;
+      cin>>n>>m;
+      multiset<ll>ms;
+      for(ll i=0;i<n;i++){
+        ll x;
+        cin>>x;
+        ms.insert(x);
+      }
+      QP<ll>pqq;
+      for(ll i=0;i<m;i++){
+        ll x;
+        cin>>x;
+        pqq.push(x);
+      }
+      bool no=0;
+      while (pqq.size() && ms.size())
+      {
+        ll tp=pqq.top();
+        pqq.pop();
+        
+        if(ms.find(tp)!=ms.end()){
+            ms.erase(ms.find(tp));
+        }
+        else{
+            if(tp==1){
+                
+                no=1;
+                break;
+            }
+            else if(tp%2 && tp>1){
+                pqq.push(tp/2);
+                pqq.push((tp+1)/2);
+            }
+            else{
+                pqq.push(tp/2);
+                pqq.push(tp/2);
+            }
+        }
+      }
+      if(pqq.size() || ms.size()) no=1;
       
+      if(no) cout<<"No"<<nn;
+      else cout<<"Yes"<<nn;
     }
 
     return 0;

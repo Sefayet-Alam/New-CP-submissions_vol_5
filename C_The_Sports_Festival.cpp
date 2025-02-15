@@ -106,66 +106,46 @@ namespace io{
     -> STRESS TESTING !!!!!!
 */
 
-
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+vector<int> v;
+int n;
+ 
+ll dp[2002][2002];
+ 
+ll solve(int p1, int p2){
+    if(p1==0 && p2==n-1) return 0;
+ 
+    if(dp[p1][p2]!=-1) return dp[p1][p2];
+    
+    ll res = M*M;
+    if(p2+1<n) res = min(res, v[p2+1]-v[p1]+solve(p1, p2+1));
+    if(p1-1>=0) res = min(res, v[p2]-v[p1-1]+solve(p1-1, p2));
+ 
+    return dp[p1][p2] = res;
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
+ 
 int main()
 {
-    fast;
-    ll t;
-    // setIO();
-    // ll tno=1;;
-    t = 1;
-    cin >> t;
-
-    while (t--)
-    {
-      
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+ 
+    cin >> n;
+    
+    for(int i = 0; i < n; i++){
+        int x;
+        cin >> x;
+        v.push_back(x);
     }
-
+ 
+    sort(v.begin(), v.end());
+ 
+    memset(dp, -1, sizeof dp);
+ 
+    ll res =M*M;
+    for(int i = 0; i < n; i++)
+        res = min(res, solve(i, i));
+ 
+    cout << res << nn;
+    
     return 0;
 }
 

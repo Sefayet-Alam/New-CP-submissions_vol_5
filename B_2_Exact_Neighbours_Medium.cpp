@@ -107,51 +107,6 @@ namespace io{
 */
 
 
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
 int main()
 {
     fast;
@@ -159,11 +114,36 @@ int main()
     // setIO();
     // ll tno=1;;
     t = 1;
-    cin >> t;
+    // cin >> t;
 
     while (t--)
     {
-      
+      ll n;
+      cin>>n;
+      vector<ll>vec(n+1);
+      for(ll i=1;i<=n;i++) cin>>vec[i];
+      vector<pll>pars(n+1);
+      pars[1]={1,1};
+      vector<ll>ans(n+1);
+      ans[1]=1;
+      for(ll i=2;i<=n;i++){
+        if(vec[i]==0){
+            ans[i]=i;
+            pars[i]={i,1};
+        }
+        else if(vec[i]<i){
+            pars[i]={i,pars[i-vec[i]].second};
+            ans[i]=i-vec[i];
+        }
+        else{
+            ans[i]=1;
+            pars[i]={i,vec[i]-i+2};
+        }
+      }
+      cout<<"YES"<<nn;
+      for(ll i=1;i<=n;i++) cout<<pars[i]<<nn;
+      for(ll i=1;i<=n;i++) cout<<ans[i]<<" ";
+      cout<<nn;
     }
 
     return 0;

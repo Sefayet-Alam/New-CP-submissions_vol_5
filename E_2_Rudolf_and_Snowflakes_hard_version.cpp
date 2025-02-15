@@ -28,7 +28,7 @@ using namespace __gnu_pbds;
 #define md 10000007
 #define PI acos(-1)
 const double EPS = 1e-9;
-const ll N = 2e5 + 10;
+const ll N = 1e6 + 10;
 const ll M = 1e9 + 7;
 
 /// INLINE FUNCTIONS
@@ -106,51 +106,26 @@ namespace io{
     -> STRESS TESTING !!!!!!
 */
 
+ll n;
 
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
+string findK(long long n) {
+    long long low = 1, high = 1e9+2;
+    
+    while (low <= high) {
+        long long mid = (low + high) / 2;
+        long long value = 1 + mid + mid * mid; 
+        
+        if (value == n) {
+            return "YES";
+        } else if (value < n) {
+            low = mid + 1; 
+        } else {
+            high = mid - 1;
+        }
     }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+    
+    return "NO"; 
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
 
 int main()
 {
@@ -160,10 +135,29 @@ int main()
     // ll tno=1;;
     t = 1;
     cin >> t;
-
+    set<ll>alls;
+    for(ll i=2;i<N;i++){
+        ll val=1+i;
+        ll p=i*i;
+        for(ll j=3;j<=63;j++){
+            
+            val+=p;
+            if(val>1e18+2) break;
+            alls.insert(val);
+            if (p > (1e18) / i) break;
+            p *= i;
+        }
+    }
     while (t--)
     {
       
+      cin>>n;
+      if(n<=3) cout<<"NO"<<nn;
+      else if(alls.count(n)) cout<<"YES"<<nn;
+      else{
+        string ans=findK(n);
+        cout<<ans<<nn;
+      }
     }
 
     return 0;

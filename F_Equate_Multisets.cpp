@@ -106,52 +106,7 @@ namespace io{
     -> STRESS TESTING !!!!!!
 */
 
-
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
+ll n;
 int main()
 {
     fast;
@@ -163,7 +118,27 @@ int main()
 
     while (t--)
     {
-      
+      bool imp = 0;
+        cin>>n;
+        ll a;
+        multiset<ll>st;
+        for(int i=0;i<n;i++){
+            cin>>a;
+            while(a%2==0) a/=2;
+            if(a%2 && a>1) st.insert(a);
+        }
+        for(int i=0;i<n;i++){
+            cin>>a;
+            while(a>1){
+                if(st.find(a)!=st.end()){
+                    st.erase(st.find(a));
+                    break;
+                }
+                a/=2;
+            }
+        }
+        if(st.empty()) cout<<"YES"<<endl;
+        else cout<<"NO"<<endl;
     }
 
     return 0;

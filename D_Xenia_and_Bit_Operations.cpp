@@ -106,52 +106,75 @@ namespace io{
     -> STRESS TESTING !!!!!!
 */
 
+/// BIT MANIPULATION
 
+#define Set(x, k) (x |= (1LL << k))
+#define Unset(x, k) (x &= ~(1LL << k))
+#define Check(x, k) (x & (1LL << k))
+#define Toggle(x, k) (x ^ (1LL << k))
 
-const ll B = 440;
+int popcount(ll x) { return __builtin_popcountll(x); };
+int poplow(ll x) { return __builtin_ctzll(x); };
+int pophigh(ll x) { return 63 - __builtin_clzll(x); };
 
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
+struct segment_tree{
+    ll size;
+    vector<ll>tree;
+    //INITIALIZATION
+    void init(ll n){
+        size=1;
+        while(size<n) size*=2;
+        tree.assign(2*size,0LL);
     }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
+    // ll merge(ll a,ll b){
+    //     return a+b;
+    // }
 
+    void build(vector<ll> &a,ll x,ll lx,ll rx){
+        //linear time
+        if(rx-lx==1){
+            if(lx<a.size()){
+                tree[x]=a[lx];
+            }
+            return;
+        }
+        ll m=(lx+rx)/2;
+        build(a,2*x+1,lx,m);
+        build(a,2*x+2,m,rx);
+        if((poplow(rx-lx))&1)tree[x]=(tree[2*x+1]|tree[2*x+2]);
+        else tree[x]=(tree[2*x+1]^tree[2*x+2]);
+    }
+    void build(vector<ll> &a){
+        //linear time
+        build(a,0,0,size);
+    }
+    //SET AND GET
+    void set(ll i,ll val,ll x,ll lx,ll rx){
+        if(rx-lx==1){
+            //leaf
+            tree[x]=val;
+            return;
+        }
+        ll m=(lx+rx)/2;
+        if(i<m){
+            set(i,val,2*x+1,lx,m);
+        }
+        else{
+            set(i,val,2*x+2,m,rx);
+        }
+        if((poplow(rx-lx))&1)tree[x]=(tree[2*x+1]|tree[2*x+2]);
+        else tree[x]=(tree[2*x+1]^tree[2*x+2]);
+    }
+    void set(ll i,ll val){
+        // assigns val at index i
+        set(i,val,0,0,size);
+    }
+
+    ll sum(){
+        // deb(tree);
+        return tree[0];
+    }
+};
 int main()
 {
     fast;
@@ -159,10 +182,30 @@ int main()
     // setIO();
     // ll tno=1;;
     t = 1;
-    cin >> t;
+    // cin >> t;
 
     while (t--)
     {
+      ll n,m;
+      cin>>n>>m;
+      n=(1LL<<n);
+      vector<ll>vec(n);
+      cin>>vec;
+    //   deb(vec);
+      segment_tree sg;
+      sg.init(n);
+      sg.build(vec);
+      
+      while (m--)
+      {
+        ll x,y;
+        cin>>x>>y;
+        x--;
+        // deb2(x,y);
+        sg.set(x,y);
+        cout<<sg.sum()<<nn;
+      }
+      cout<<nn;
       
     }
 

@@ -107,51 +107,6 @@ namespace io{
 */
 
 
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
 int main()
 {
     fast;
@@ -163,7 +118,37 @@ int main()
 
     while (t--)
     {
+      ll n;
+      cin>>n;
+      vector<ll>g[n];
+      for(ll i=0;i<n-1;i++){
+        ll u,v;
+        cin>>u>>v;
+        u--,v--;
+        g[u].push_back(v);
+        g[v].push_back(u);
+      }
+      if(n==2){
+        cout<<0<<nn;
+        continue;
+      }
+      ll leaves=0;
+      for(ll i=0;i<n;i++) if(g[i].size()==1) leaves++;
       
+      ll ans=leaves*(n-leaves);
+      ll p=0,q=0;
+      for(ll i=0;i<n;i++){
+        if(g[i].size()==1) continue;
+        ll curlef=0;
+        for(auto it:g[i]) if(g[it].size()==1) curlef++;
+        if(curlef==0) p++;
+        else{
+            ll sz=g[i].size();
+            q+=max(0LL,sz-curlef-1);
+        }
+      }
+      ans+=p*q;
+      cout<<ans<<nn;
     }
 
     return 0;

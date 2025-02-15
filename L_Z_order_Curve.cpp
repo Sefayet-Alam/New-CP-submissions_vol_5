@@ -105,53 +105,21 @@ namespace io{
     -> Maybe take a deep breath and take a break 
     -> STRESS TESTING !!!!!!
 */
+/// BIT MANIPULATION
 
+#define Set(x, k) (x |= (1LL << k))
+#define Unset(x, k) (x &= ~(1LL << k))
+#define Check(x, k) (x & (1LL << k))
+#define Toggle(x, k) (x ^ (1LL << k))
 
+int popcount(ll x) { return __builtin_popcountll(x); };
+int poplow(ll x) { return __builtin_ctzll(x); };
+int pophigh(ll x) { return 63 - __builtin_clzll(x); };
 
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+void pr_binary(ll num){
+    for(ll i=63;i>=0;i--) cout<<((num>>i)&1);
+    cout<<endl;
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
 int main()
 {
     fast;
@@ -163,7 +131,16 @@ int main()
 
     while (t--)
     {
-      
+      ll a,b;
+      cin>>a>>b;
+      for(ll i=63;i>=0;i--){
+        if(Check(a,i)==Check(b,i)){
+            a=Unset(a,i);
+            b=Unset(b,i);
+        }
+        else break;
+      }
+      cout<<a<<nn;
     }
 
     return 0;

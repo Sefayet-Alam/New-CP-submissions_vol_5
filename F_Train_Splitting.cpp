@@ -106,52 +106,56 @@ namespace io{
     -> STRESS TESTING !!!!!!
 */
 
-
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+void solve() {
+	int n, m; cin >> n >> m;
+	vector <pair <int, int>> vp;
+	vector <int> edge (n + 1);
+	int mm = m;
+	while (m--) {
+		int u, v; cin >> u >> v;
+		edge[u]++;
+		edge[v]++;
+ 
+		vp.push_back({u, v});
+	}
+ 
+	int ed = -1;
+	for (int i = 1; i <= n; i++) {
+		if(edge[i] < n - 1) {
+			ed = i;
+			break;
+		}
+	}
+		
+	if (ed == -1) {
+		bool  f = 1;
+		cout << 3 << '\n';
+		for (int i = 0; i < mm; i++) {
+			if (vp[i].first == 1 or vp[i].second == 1) {
+				if (f) {
+					cout << 1 << ' ';
+					f = 0;
+				} else {
+					cout << 2 << ' ';
+				}
+			} else {
+				cout << 3 << ' ';
+			}
+		} cout << '\n';
+	} else {
+		// cout << ed << '\n';
+		cout << 2 << '\n';
+		for (int i = 0; i < mm; i++) {
+			if (vp[i].first == ed or vp[i].second == ed) {
+				// cout << "HI " << i << ' ';
+				cout << 2 << ' ';
+			} else {
+				cout << 1 << ' ';
+			}
+		} cout << '\n';
+	}
+ 
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
 int main()
 {
     fast;
@@ -163,7 +167,7 @@ int main()
 
     while (t--)
     {
-      
+      solve();
     }
 
     return 0;

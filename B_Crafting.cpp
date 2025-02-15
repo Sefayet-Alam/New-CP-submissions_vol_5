@@ -106,52 +106,9 @@ namespace io{
     -> STRESS TESTING !!!!!!
 */
 
-
-
-const ll B = 440;
-
-struct query
-{
-    int l, r, id;
-    bool operator<(const query &x) const
-    {
-        if (l / B == x.l / B)
-            return ((l / B) & 1) ? r > x.r : r < x.r;
-        return l / B < x.l / B;
-    }
-} Q[N];
-ll cnt[N], a[N];
-long long sum;
-inline void add_left(int i)
-{
-    ll x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
+bool cmp(pll a,pll b){
+    return a.first>b.first;
 }
-inline void add_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 0)
-        sum++;
-    ++cnt[x];
-}
-inline void rem_left(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-inline void rem_right(int i)
-{
-    int x = a[i];
-    if (cnt[x] == 1)
-        sum--;
-    --cnt[x];
-}
-long long ans[N];
-
 int main()
 {
     fast;
@@ -163,7 +120,30 @@ int main()
 
     while (t--)
     {
-      
+      ll n;
+      cin>>n;
+      vector<ll>a(n),b(n);
+      cin>>a>>b;
+      ll need=0;
+      ll tot=0;
+      for(ll i=0;i<n;i++){
+        if(a[i]<b[i]){
+            need++;
+            tot=b[i]-a[i];
+        }
+      }
+      if(need>1) cout<<"NO"<<nn;
+      else if(need==1){
+        bool f=0;
+        for(ll i=0;i<n;i++){
+            if(a[i]>=b[i]){
+                if(a[i]-b[i]<tot) f=1;
+            }
+        }
+        if(f) cout<<"NO"<<nn;
+        else cout<<"YES"<<nn;
+      }
+      else cout<<"YES"<<nn;
     }
 
     return 0;
