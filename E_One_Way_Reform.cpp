@@ -195,6 +195,7 @@ using namespace io;
 
 /* Points tO CONSIDER
     # RTE? -> check array bounds and constraints
+    -> check if u are dividing smth by 0
     #TLE? -> thinks about binary search/ dp / optimization techniques
     # WA?
     -> overflow,reset global variables
@@ -222,121 +223,69 @@ using namespace io;
 #define md 10000007
 #define PI acos(-1)
 const double EPS = 1e-9;
-const ll N = 2e5 + 10;
+const int N = 210;
 const ll M = 1e9 + 7;
 
-/*
-all the edges should be in the same connected component
-#undirected graph: euler path: all degrees are even or exactly two of them are odd.
-#undirected graph: euler circuit: all degrees are even
-*/
-
-// euler path in an undirected graph
-// it also finds circuit if it exists
-vector<pair<int, int>> g[N];
-vector<int> ans;
-int done[N];
-int vis[N]; // number of edges
-void dfs(int u)
+int main()
 {
-    while (done[u] < g[u].size())
-    {
-        auto e = g[u][done[u]++];
-        if (vis[e.second])
-            continue;
-        vis[e.second] = 1;
-        dfs(e.first);
-    }
-    ans.push_back(u);
-}
-
-int solve(int n)
-{
-    int edges = 0;
-    ans.clear();
-    memset(done, 0, sizeof done);
-    memset(vis, 0, sizeof vis);
-    vector<int> deg(n + 1, 0);
-    for (int u = 1; u <= n; u++)
-    {
-        for (auto e : g[u])
-        {
-            deg[e.first]++, deg[u]++, edges++;
-        }
-    }
-    int odd = 0, root = 0;
-    for (int i = 1; i <= n; i++)
-    {
-        if (deg[i] & 1)
-            odd++, root = i;
-    }
-    if (odd > 2)
-        return 0;
-    if (root == 0)
-    {
-        for (int i = 1; i <= n; i++)
-            if (deg[i])
-                root = i;
-    }
-    if (root == 0)
-        return 1; // empty graph
-    dfs(root);
-    if (ans.size() != edges / 2 + 1)
-        return 0;
-    reverse(ans.begin(), ans.end());
-    return 1;
-}
-
-int32_t main()
-{
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-
-    int t;
+    fast;
+    ll t;
+    // setIO();
+    // ll tno=1;;
+    t = 1;
     cin >> t;
+
     while (t--)
     {
         int n, m;
         cin >> n >> m;
-        vector<int> deg(n + 1, 0);
-        for (int i = 1; i <= m; i++)
+        set<int> G[N];
+        set<pair<int, int>> Gp;
+        set<int> oddV;
+        for (int i = 0; i < m; i++)
         {
-            int u, v;
-            cin >> u >> v;
-            g[u].push_back({v, i});
-            g[v].push_back({u, i});
-            deg[u]++, deg[v]++;
+            int x, y;
+            cin >> x >> y;
+            G[x].insert(y);
+            G[y].insert(x);
+            Gp.insert({x, y});
+            Gp.insert({y, x});
         }
-        int sz = m;
         for (int i = 1; i <= n; i++)
+            if (G[i].size() % 2)
+                oddV.insert(i);
+        cout << n - oddV.size() << endl;
+        while (!Gp.empty())
         {
-            if (deg[i] & 1)
+            int x = Gp.begin()->first;
+            int y = Gp.begin()->second;
+            while (1)
             {
-                ++sz;
-                g[n + 1].push_back({i, sz});
-                g[i].push_back({n + 1, sz});
+                if (Gp.find({x, y}) != Gp.end())
+                {
+                    Gp.erase({x, y});
+                    Gp.erase({y, x});
+                    G[x].erase(y);
+                    G[y].erase(x);
+                    cout << x << " " << y << endl;
+                }
+                if (!G[y].empty())
+                {
+                    x = y;
+                    y = *G[y].begin();
+                }
+                else if (oddV.find(y) != oddV.end())
+                {
+                    oddV.erase(y);
+                    x = y;
+                    y = *oddV.begin();
+                    oddV.erase(y);
+                }
+                else
+                    break;
             }
         }
-        int ok = solve(n + 1);
-        assert(ok);
-        vector<int> in(n + 2, 0), out(n + 2, 0);
-        for (int i = 0; i + 1 < ans.size(); i++)
-        {
-            if (ans[i] != n + 1 && ans[i + 1] != n + 1)
-            {
-                in[ans[i + 1]]++;
-                out[ans[i]]++;
-            }
-        }
-        int res = 0;
-        for (int i = 1; i <= n; i++)
-            res += in[i] == out[i];
-        cout << res << '\n';
-        for (int i = 0; i + 1 < ans.size(); i++)
-            if (ans[i] != n + 1 && ans[i + 1] != n + 1)
-                cout << ans[i] << ' ' << ans[i + 1] << '\n';
-        for (int i = 0; i <= n + 1; i++)
-            g[i].clear();
     }
+
     return 0;
 }
