@@ -105,6 +105,7 @@
         "syncstream": "cpp",
         "text_encoding": "cpp",
         "thread": "cpp",
-        "__node_handle": "cpp"
+        "__node_handle": "cpp",
+        "filesystem": "cpp"
     }
 }

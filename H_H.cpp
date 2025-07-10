@@ -24,13 +24,6 @@ using namespace __gnu_pbds;
 #define deb2(x, y) cout << #x << "=" << x << "," << #y << "=" << y << endl
 #define debug printf("I am here\n")
 
-// CONSTANTS
-#define md 10000007
-#define PI acos(-1)
-const double EPS = 1e-9;
-const ll N = 1e3 + 10;
-const ll M = 1e9 + 7;
-
 /// INLINE FUNCTIONS
 inline ll GCD(ll a, ll b) { return b == 0 ? a : GCD(b, a % b); }
 inline ll LCM(ll a, ll b) { return a * b / GCD(a, b); }
@@ -202,6 +195,7 @@ using namespace io;
 
 /* Points tO CONSIDER
     # RTE? -> check array bounds and constraints
+    -> check if u are dividing smth by 0
     #TLE? -> thinks about binary search/ dp / optimization techniques
     # WA?
     -> overflow,reset global variables
@@ -224,62 +218,54 @@ using namespace io;
     -> Maybe take a deep breath and take a break
     -> STRESS TESTING !!!!!!
 */
-ll n, h, s;
-vector<pair<ll, pll>> vec(N);
+
+// CONSTANTS
+#define md 10000007
+#define PI acos(-1)
+const double EPS = 1e-9;
+const ll N = 2e5 + 10;
+const ll M = 1e9 + 7;
 
 int main()
 {
     fast;
-    cin >> n >> h >> s;
-    for (ll i = 0; i < n; i++)
+    ll t;
+    // setIO();
+    // ll tno=1;;
+    t = 1;
+    // cin >> t;
+
+    while (t--)
     {
-        ll a, b, c;
-        cin >> a >> b >> c;
-        vec[i] = {c, {a, b}};
-    }
-    ll dp[3][h + 5][s + 5];
-    mem(dp, 0);
-    ll ans = 0;
-    ll cur = 0;
-    for (ll j = h; j >= 0; j--)
-    {
-        for (ll k = s; k >= 0; k--)
+        string s;
+        cin >> s;
+        ll n = s.size();
+        ll ans = 0;
+        vector<ll> vec(n, 0);
+        for (ll i = 0; i < n; i++)
         {
-            ll nowh = j - vec[0].second.first;
-            ll nows = k - vec[0].second.second;
-            if (nows < 0)
-                nowh -= abs(nows);
-            nows = max(0LL, nows);
-            if (nowh > 0)
-            {
-                dp[0][nowh][nows] = max(dp[0][nowh][nows], vec[0].first);
-                ans = max(ans, dp[0][nowh][nows]);
-            }
+            vec[i] = s[i] - '0';
         }
-    }
-    for (ll i = 1; i < n; i++)
-    {
-        cur ^= 1;
-        ll prev = cur ^ 1;
-        for (ll j = h; j >= 0; j--)
+
+        ans = vec[n-1];
+        for (ll i = n - 2; i >= 0; i--)
         {
-            for (ll k = s; k >= 0; k--)
+            ll x=vec[i];
+            ll rn=ans%10;
+            ll hotehobe=(s[i]-'0');
+            // deb2(rn,hotehobe);
+            while (rn!=hotehobe)
             {
-                dp[cur][j][k] = max(dp[cur][j][k], dp[prev][j][k]);
-                ans = max(ans, dp[cur][j][k]);
-                ll nowh = j - vec[i].second.first;
-                ll nows = k - vec[i].second.second;
-                if (nows < 0)
-                    nowh -= abs(nows);
-                nows = max(0LL, nows);
-                if (nowh > 0)
-                {
-                    dp[cur][nowh][nows] = max(dp[cur][nowh][nows], dp[prev][j][k] + vec[i].first);
-                    ans = max(ans, dp[cur][nowh][nows]);
-                }
+                ans++;
+                rn++;
+                rn%=10;
+                // if(rn<0) rn=9;
             }
+            
         }
+        ans+=n;
+        cout << ans << nn;
     }
-    cout << ans << nn;
+
     return 0;
 }

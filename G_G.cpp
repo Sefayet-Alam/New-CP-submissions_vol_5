@@ -24,13 +24,6 @@ using namespace __gnu_pbds;
 #define deb2(x, y) cout << #x << "=" << x << "," << #y << "=" << y << endl
 #define debug printf("I am here\n")
 
-// CONSTANTS
-#define md 10000007
-#define PI acos(-1)
-const double EPS = 1e-9;
-const ll N = 2e5 + 10;
-const ll M = 1e9 + 7;
-
 /// INLINE FUNCTIONS
 inline ll GCD(ll a, ll b) { return b == 0 ? a : GCD(b, a % b); }
 inline ll LCM(ll a, ll b) { return a * b / GCD(a, b); }
@@ -202,6 +195,7 @@ using namespace io;
 
 /* Points tO CONSIDER
     # RTE? -> check array bounds and constraints
+    -> check if u are dividing smth by 0
     #TLE? -> thinks about binary search/ dp / optimization techniques
     # WA?
     -> overflow,reset global variables
@@ -225,71 +219,92 @@ using namespace io;
     -> STRESS TESTING !!!!!!
 */
 
+// CONSTANTS
+#define md 10000007
+#define PI acos(-1)
+const double EPS = 1e-9;
+const ll N = 2e5 + 10;
+const ll M = 1e18 + 7;
 
-//find x0,y0 for ax+by=c
-ll gcd(ll a, ll b,ll &x, ll &y){
-    if(b == 0){
-        x= 1; y = 0;
-        return a;
+ll FM[N];
+int is_initialized = 0;
+ll factorialMod(ll n, ll x){
+    if (!is_initialized){
+        FM[0] = 1 % x;
+        for (int i = 1; i < N; i++)
+            FM[i] = (FM[i - 1] * i) % x;
+        is_initialized = 1;
     }
-    ll x1, y1;
-    ll d = gcd(b, a%b, x1, y1);
-    x = y1;
-    y = x1 - y1*(a/b);
-    return d;
+    return FM[n];
 }
 
-pll solution(ll a, ll b, ll n)
-{
-    ll x0, y0;
-    ll g = gcd(a, b, x0, y0);
-    if(n%g != 0){
-        return {-1,-1};
-        // no solution
+ll powerMod(ll x, ll y, ll p){
+    ll res = 1 % p;
+    x = x % p;
+    while (y > 0){
+        if (y & 1) res = (res * x) % p;
+        y = y >> 1;
+        x = (x * x) % p;
     }
-    x0 = x0*n/g;
-    y0 = y0*n/g;
-    // single valid answer
-    // cout<<"x = "<<x0<<", y = "<<y0<<endl;
-    return {x0,y0};
+    return res;
 }
+
+ll inverseMod(ll a, ll x){
+    return powerMod(a, x - 2, x);
+}
+
+ll nCrMod(ll n, ll r, ll x){
+    if (r == 0) return 1;
+    if (r > n) return 0;
+    ll res = factorialMod(n, x);
+    ll fr = factorialMod(r, x);
+    ll zr = factorialMod(n - r, x);
+    res = (res * inverseMod((fr * zr) % x, x)) % x;
+    return res;
+}
+
+
+
 int main()
 {
     fast;
     ll t;
     // setIO();
-    // ll tno=1;;
+    ll tno = 1;
+    ;
     t = 1;
-    ll a, b, c, d, e, f;
-    cin >> a >> b >> c >> d >> e >> f;
-    // a=min(a,b);
-    // c=min(c,d);
-    a*=100;
-    b*=100;
-    double dens = 0.000;
-    ll mass = a;
-    ll sug = 0;
-    for(ll i=0;i*a<=f;i++){
-        for(ll j=0;i*a+j*b<=f;j++){
-            ll w=i*a+j*b;
-            for(ll x=0;x*c+w<=f;x++){
-                for(ll y=0;x*c+y*d+w<=f;y++){
-                    ll sugr=x*c+y*d;
-                    if(w*e<100*sugr) continue;
-                    // deb2(sugr,w);
-                    
-                    double curdens=(100.00*sugr)/(1.00*sugr+w);
-                    if(curdens>dens){
-                        dens=curdens;
-                        mass=sugr+w;
-                        sug=sugr;
-                    }
-                }
+    cin >> t;
+
+    while (t--)
+    {
+        cout << "Case " << tno++ << ": ";
+        string s;
+        ll p;
+        cin>>s>>p;
+        sort(all(s));
+        ll n=s.size();
+        map<ll,ll>mpp;
+        for(ll i=0;i<n;i++){
+            mpp[s[i]]++;
+        }
+        ll tot=factorialMod(n,M);
+        for(auto it:mpp){
+            ll k=it.second;
+            tot/=factorialMod(k,M);
+        }
+        if(p>tot) cout<<"Impossible"<<nn;
+        else{
+            p--;
+            string r=s;
+            while (next_permutation(all(s)) && p)
+            {
+
+                r=s;
+                p--;
             }
+            cout<<r<<nn;
         }
     }
-  
-    cout << mass << " " << sug << nn;
 
     return 0;
 }

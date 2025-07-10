@@ -24,12 +24,6 @@ using namespace __gnu_pbds;
 #define deb2(x, y) cout << #x << "=" << x << "," << #y << "=" << y << endl
 #define debug printf("I am here\n")
 
-// CONSTANTS
-#define md 10000007
-#define PI acos(-1)
-const double EPS = 1e-9;
-const ll N = 1e6 + 10;
-const ll M = 1e9 + 7;
 
 /// INLINE FUNCTIONS
 inline ll GCD(ll a, ll b) { return b == 0 ? a : GCD(b, a % b); }
@@ -83,6 +77,7 @@ namespace io{
 
 /* Points tO CONSIDER
     # RTE? -> check array bounds and constraints
+    -> check if u are dividing smth by 0
     #TLE? -> thinks about binary search/ dp / optimization techniques
     # WA? 
     -> overflow,reset global variables
@@ -106,16 +101,12 @@ namespace io{
     -> STRESS TESTING !!!!!!
 */
 
-/// BIT MANIPULATION
-
-#define Set(x, k) (x |= (1LL << k))
-#define Unset(x, k) (x &= ~(1LL << k))
-#define Check(x, k) (x & (1LL << k))
-#define Toggle(x, k) (x ^ (1LL << k))
-
-int popcount(ll x) { return __builtin_popcountll(x); };
-int poplow(ll x) { return __builtin_ctzll(x); };
-int pophigh(ll x) { return 63 - __builtin_clzll(x); };
+// CONSTANTS
+#define md 10000007
+#define PI acos(-1)
+const double EPS = 1e-9;
+const ll N = 2e5 + 10;
+const ll M = 1e9 + 7;
 
 int main()
 {
@@ -124,20 +115,24 @@ int main()
     // setIO();
     // ll tno=1;;
     t = 1;
-    cin >> t;
-    vector<ll>xors(N,0);
-    ll prev=0;
-    for(ll i=1;i<N;i++){
-        xors[i]=(xors[i-1]^i);
-    }
+    // cin >> t;
+
     while (t--)
     {
-      ll n;
-      cin>>n;
-      ll p=n^(xors[n]);
-      if(xors[n]==0) cout<<"Pinkie Pie"<<nn;
-      else if(xors[n]>n)  cout<<"Pinkie Pie"<<nn;
-      else cout<<"Fluttershy"<<nn;
+      string s,p;
+      cin>>s>>p;
+      ll n=s.size();
+      ll m=p.size();
+      map<char,ll>mpp;
+      for(ll i=0;i<m;i++){
+        mpp[p[i]]++;
+      }
+      bool ok=1;
+      for(ll i=1;i<n;i++){
+        if(mpp[s[i-1]]==0 && s[i]>='A' && s[i]<='Z') ok=0;
+      }
+      if(ok) cout<<"Yes"<<nn;
+      else cout<<"No"<<nn;
     }
 
     return 0;
