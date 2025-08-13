@@ -56,7 +56,12 @@ int main() {
         dp[i] = (power(2, dp[i], md) - 1 + md) % md;
     }
     backward2(dp);
-    cout << dp[0] << endl;
+    for(ll k=0;k<=n;k++){
+        cout<<dp[k]<<" ";
+    }
+    cout<<endl;
 
     return 0;
 }
+
+
