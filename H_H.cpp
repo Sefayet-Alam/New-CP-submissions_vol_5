@@ -226,6 +226,72 @@ const double EPS = 1e-9;
 const ll N = 2e5 + 10;
 const ll M = 1e9 + 7;
 
+ll powerMod(ll x, ll y, ll p)
+{
+    ll res = 1 % p;
+    x = x % p;
+    while (y > 0)
+    {
+        if (y & 1)
+            res = (res * x) % p;
+        y = y >> 1;
+        x = (x * x) % p;
+    }
+    return res;
+}
+
+ll inverseMod(ll a, ll x)
+{
+    return powerMod(a, x - 2, x);
+}
+
+vector<ll> g[N];
+vector<ll> tmp;
+vector<ll> vec(N);
+
+ll dfs(ll vertex, ll par)
+{
+    tmp.push_back(vec[vertex]);
+    bool f = 0;
+    ll ret = 0;
+    ll cc = 0;
+    for (int child : g[vertex])
+    {
+        if (child == par)
+            continue;
+        cc++;
+    }
+    ll invc = inverseMod(cc, M);
+    for (int child : g[vertex])
+    {
+        if (child == par)
+            continue;
+        ret = (ret + (invc * dfs(child, vertex)) % M) % M;
+    }
+
+    if (cc == 0)
+    {
+        ll maxm = 0;
+        for (auto it : tmp)
+        {
+            maxm ^= it;
+        }
+        for (auto it : tmp)
+        {
+            ret = max(ret, maxm ^ it);
+        }
+    }
+    if(tmp.size()) tmp.pop_back();
+    return ret%M;
+}
+
+void reset(ll n){
+    for(ll i=0;i<=n;i++){
+        g[i].clear();
+        vec[i]=0;
+    }
+    tmp.clear();
+}
 int main()
 {
     fast;
@@ -233,37 +299,23 @@ int main()
     // setIO();
     // ll tno=1;;
     t = 1;
-    // cin >> t;
+    cin >> t;
 
     while (t--)
     {
-        string s;
-        cin >> s;
-        ll n = s.size();
-        ll ans = 0;
-        vector<ll> vec(n, 0);
-        for (ll i = 0; i < n; i++)
+        ll n;
+        cin >> n;
+        reset(n);
+        for (ll i = 1; i <= n; i++)
+            cin >> vec[i];
+        for (ll i = 0; i < n - 1; i++)
         {
-            vec[i] = s[i] - '0';
+            ll u, v;
+            cin >> u >> v;
+            g[u].push_back(v);
+            g[v].push_back(u);
         }
-
-        ans = vec[n-1];
-        for (ll i = n - 2; i >= 0; i--)
-        {
-            ll x=vec[i];
-            ll rn=ans%10;
-            ll hotehobe=(s[i]-'0');
-            // deb2(rn,hotehobe);
-            while (rn!=hotehobe)
-            {
-                ans++;
-                rn++;
-                rn%=10;
-                // if(rn<0) rn=9;
-            }
-            
-        }
-        ans+=n;
+        ll ans = dfs(1, -1);
         cout << ans << nn;
     }
 

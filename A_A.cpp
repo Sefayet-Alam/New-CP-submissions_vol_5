@@ -116,23 +116,13 @@ int main()
     // ll tno=1;;
     t = 1;
     // cin >> t;
-
+// 
     while (t--)
     {
-      string s,p;
-      cin>>s>>p;
-      ll n=s.size();
-      ll m=p.size();
-      map<char,ll>mpp;
-      for(ll i=0;i<m;i++){
-        mpp[p[i]]++;
-      }
-      bool ok=1;
-      for(ll i=1;i<n;i++){
-        if(mpp[s[i-1]]==0 && s[i]>='A' && s[i]<='Z') ok=0;
-      }
-      if(ok) cout<<"Yes"<<nn;
-      else cout<<"No"<<nn;
+      ll w,h;
+      cin>>w>>h;
+      if(60<=w && 130>=h) cout<<"YES"<<nn;
+      else cout<<"NO"<<nn;
     }
 
     return 0;

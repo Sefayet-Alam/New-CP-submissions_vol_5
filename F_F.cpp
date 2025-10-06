@@ -223,35 +223,34 @@ using namespace io;
 #define md 10000007
 #define PI acos(-1)
 const double EPS = 1e-9;
-const ll N = 1e3 + 10;
+const ll N = 2e5 + 10;
 const ll M = 1e9 + 7;
 
-ll n, m;
-vpll Move = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-
-bool isValid(ll x, ll y)
+ll dp[N][2];
+bool func(ll rem, ll turn, ll a, ll b)
 {
-    return (x >= 1 && y >= 1 && x <= n && y <= m);
-}
-
-ll arr[N][N];
-ll pfsum[N][N];
-void buildPS()
-{
-    for (int i = 1; i <= n + 2; i++)
+    if (rem == 0)
+        return 0;
+    ll ret = 0;
+    // if(dp[rem][turn]!=-1) return dp[rem][turn];
+    if (turn == 0)
     {
-        for (int j = 1; j <= m + 2; j++)
+        for (ll j = 1; j <= a; j++)
         {
-            pfsum[i][j] = arr[i][j] + pfsum[i - 1][j] + pfsum[i][j - 1] - pfsum[i - 1][j - 1];
+            if (j <= rem)
+                ret |= !(func(rem - j, !turn, a, b));
         }
     }
+    else
+    {
+        for (ll j = 1; j <= b; j++)
+        {
+            if (j <= rem)
+                ret |= !(func(rem - j, !turn, a, b));
+        }
+    }
+    return ret;
 }
-ll getSum(ll a, ll b, ll c, ll d)
-{
-    return pfsum[c][d] - pfsum[a - 1][d] - pfsum[c][b - 1] + pfsum[a - 1][b - 1];
-}
-
-
 int main()
 {
     fast;
@@ -259,116 +258,61 @@ int main()
     // setIO();
     // ll tno=1;;
     t = 1;
-    // cin >> t;
+    // for (ll i = 7; i <= 20; i++)
+    // {
+    //     for (ll a = 1; a <= 10; a++)
+    //     {
+    //         for (ll b = 1; b <= 10; b++)
+    //         {
+
+    //             ll ans = func(i, 0, a, b);
+    //             // ll ans2=1;
+    //             // ll dec=(i%(a+b));
+    //             // if(dec>a || dec==0) ans2=0;
+    //             ll ans2 = 1;
+    //             if (a < i)
+    //             {
+    //                 if(b>a){
+    //                     ans2=0;
+    //                 }
+    //                 else if(i%(a+1)==0 && a==b){
+    //                     ans2=0;
+    //                 }
+    //             }
+    //             // if(ans==0){
+    //             // deb(i);
+    //             // deb2(a,b);
+    //             // deb(ans);
+    //             // }
+    //             if (ans != ans2)
+    //             {
+    //                 deb(i);
+    //                 deb2(a, b);
+    //                 // deb(ans);
+    //                 deb2(ans, ans2);
+    //             }
+    //         }
+    //     }
+    // }
+    cin >> t;
 
     while (t--)
     {
-
-        cin >> n >> m;
-        char grid[n + 5][m + 5];
-
-        for (ll i = 1; i <= n; i++)
-        {
-            for (ll j = 1; j <= m; j++)
-            {
-                cin >> grid[i][j];
-                if (grid[i][j] == '*')
-                {
-                    arr[i][j] = 1;
-                }
-            }
-        }
-        buildPS();
-        ll ansgr[n + 5][m + 5];
-        mem(ansgr, 0);
-        vector<tuple<ll,ll,ll>>ans;
-        for (ll i = 0; i < n; i++)
-        {
-            for (ll j = 0; j < m; j++)
-            {
-                if (grid[i][j] == '*')
-                {
-                    ll l = 1, r = 1005;
-                    ll cur = 0;
-                    while (l <= r)
-                    {
-                        ll mid = l + (r - l) / 2;
-                        bool ok = 1;
-                        for (auto it : Move)
-                        {
-                            ll a = i + mid * it.first;
-                            ll b = j + mid * it.second;
-                            if (!isValid(a, b))
-                            {
-                                ok = 0;
-                                break;
-                            }
-                        }
-                        if (ok)
-                        {
-                            ll a = i - mid;
-                            ll b = i + mid;
-                            ll sum1 = getSum(a, j, b, j);
-                            ll c = j - mid;
-                            ll d = j + mid;
-                            ll sum2 = getSum(i, c, i, d);
-                            if (sum1 + sum2 - 2 != mid * 4 || sum1 != sum2)
-                                ok = 0;
-                        }
-                        if (ok)
-                        {
-                            cur = mid;
-                            l = mid + 1;
-                        }
-                        else
-                        {
-                            r = mid - 1;
-                        }
-                    }
-                    if (cur)
-                    {
-                        // deb2(i,j);
-                        // deb(cur);
-                        ans.push_back({i,j,cur});
-                        for(ll k=0;k<=cur;k++){
-                            ansgr[i-k][j]++;
-                            ansgr[i+k][j]++;
-                            ansgr[i][j-k]++;
-                            ansgr[i][j+k]++;
-                        }
-                    }
-                }
-            }
-        }
-
-        // for (int i = 1; i <= n + 2; i++)
-        // {
-        //     for (int j = 1; j <= m + 2; j++)
-        //     {
-        //         ansgr[i][j] += ansgr[i - 1][j] + ansgr[i][j - 1] - ansgr[i - 1][j - 1];
-        //     }
-        // }
-        bool okk=1;
-        for (ll i = 1; i <= n; i++)
-        {
-            for (ll j = 1; j <= m; j++)
-            {
-                if(grid[i][j]=='*' && ansgr[i][j]==0){
-                    okk=0;
-                }
-            }
-            // cout << nn;
-        }
-        if(!okk) cout<<-1<<nn;
+        ll n;
+        cin>>n;
+        ll a,b;
+        cin>>a>>b;
+        if(a>=n) cout<<"Alice"<<nn;
         else{
-            cout<<ans.size()<<nn;
-            for(auto [a,b,c]:ans){
-                cout<<a<<" "<<b<<" "<<c<<nn;
+            if(b>a){
+                cout<<"Bob"<<nn;
             }
+            else if(a==b && n%(a+1)==0){
+                cout<<"Bob"<<nn;
+            }
+            else cout<<"Alice"<<nn;
         }
     }
 
     return 0;
 }
-
-

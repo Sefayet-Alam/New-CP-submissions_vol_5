@@ -223,54 +223,8 @@ using namespace io;
 #define md 10000007
 #define PI acos(-1)
 const double EPS = 1e-9;
-const ll N = 2e2 + 10;
+const ll N = 2e5 + 10;
 const ll M = 1e9 + 7;
-
-map<ll, ll> mpp;
-// bool vis[N];
-vector<ll> g[N];
-map<ll,ll>comp;
-ll c;
-ll dp[N];
-ll dfs(ll vertex)
-{
-    bool f = 0;
-    if(g[vertex].size()==0){
-        if (mpp[vertex]) return 1;
-        return 0;
-    }
-    if(dp[vertex]!=-1) return dp[vertex];
-    ll ret=0;
-    for (ll child : g[vertex])
-    {
-        // if (vis[child])
-        //     continue;
-        ret+=dfs(child);
-        f = 1;
-    }
-    return dp[vertex]=ret;
-}
-
-void reset(ll n)
-{
-    for (ll i = 0; i <= n; i++)
-    {
-        g[i].clear();
-        // vis[i] = 0;
-    }
-    mpp.clear();
-    comp.clear();
-    c=1;
-}
-
-ll press(ll x){
-    if(comp.find(x)!=comp.end()) return comp[x];
-    else{
-        c++;
-        comp[x]=c;
-        return comp[x];
-    }
-}
 
 int main()
 {
@@ -283,44 +237,28 @@ int main()
 
     while (t--)
     {
-        ll n;
-        cin >> n;
-        reset(n);
-        comp[1]=1;
-        mem(dp,-1);
-        for (ll i = 1; i <= n; i++)
-        {
-            ll x;
-            cin >> x;
-            x=press(x);
-            
-            string p;
-            cin >> p;
-            char k=p.back();
-            
-            if (k >= 'a' && k <= 'z')
-            {
-                // deb2(x,k);
-                if(p=="favourably") mpp[x] = 1;
-                // deb2(x,p);
-            }
-            else
-            {
-                ll y = stoi(p);
-                ll z, w;
-                cin >> z >> w;
-                y=press(y);
-                z=press(z);
-                w=press(w);
-                
-                // deb2(x,y);
-                // deb2(z,w);
-                g[x].push_back(y);
-                g[x].push_back(z);
-                g[x].push_back(w);
-            }
+        ll n, k, s;
+        cin >> n >> k >> s;
+        ll ans = -1;
+        ll tot =0;
+        ll od=1;
+        vector<ll>vec;
+        for(ll cnt=1;cnt<=n;cnt++){
+            tot+=od;
+            vec.push_back(od);
+            od+=2;
         }
-        ll ans=dfs(1);
+        // deb(vec);
+        od=1;
+        for(ll cnt=1;cnt<=n;cnt++){
+            ll now=tot-od+k*od;
+            if(now==s){
+                ans=od;
+                break;
+            }
+            od+=2;
+            
+        }
         cout<<ans<<nn;
     }
 

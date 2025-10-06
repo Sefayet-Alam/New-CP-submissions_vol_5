@@ -224,87 +224,113 @@ using namespace io;
 #define PI acos(-1)
 const double EPS = 1e-9;
 const ll N = 2e5 + 10;
-const ll M = 1e18 + 7;
+const ll M = 1e9 + 7;
 
-ll FM[N];
-int is_initialized = 0;
-ll factorialMod(ll n, ll x){
-    if (!is_initialized){
-        FM[0] = 1 % x;
-        for (int i = 1; i < N; i++)
-            FM[i] = (FM[i - 1] * i) % x;
-        is_initialized = 1;
+ll tim[3][N];
+ll n;
+vector<ll> vec(N);
+
+bool check(ll i, ll j, ll a, ll b)
+{
+    i %= n, j %= n;
+    vector<pll> av(n), bv(n);
+    pll aa = {0, tim[a][i]};
+    pll bb = {0, tim[b][j]};
+    av[i] = aa;
+    bv[j] = bb;
+    for (ll k = 1; k < n; k++)
+    {
+        pll nowa = {aa.second + vec[i], aa.second + vec[i] + tim[a][(i + 1) % n]};
+        pll nowb = {bb.second + vec[j], bb.second + vec[j] + tim[b][(j + 1) % n]};
+        i++;
+        i %= n;
+        j++;
+        j %= n;
+        av[i] = nowa;
+        bv[j] = nowb;
+        aa = nowa;
+        bb = nowb;
     }
-    return FM[n];
-}
-
-ll powerMod(ll x, ll y, ll p){
-    ll res = 1 % p;
-    x = x % p;
-    while (y > 0){
-        if (y & 1) res = (res * x) % p;
-        y = y >> 1;
-        x = (x * x) % p;
+    for (ll i = 0; i < n; i++)
+    {
+        vector<pll> tmp = {av[i], bv[i]};
+        sort(all(tmp));
+        if (tmp[0].second > tmp[1].first)
+            return false;
     }
-    return res;
+    return true;
 }
-
-ll inverseMod(ll a, ll x){
-    return powerMod(a, x - 2, x);
-}
-
-ll nCrMod(ll n, ll r, ll x){
-    if (r == 0) return 1;
-    if (r > n) return 0;
-    ll res = factorialMod(n, x);
-    ll fr = factorialMod(r, x);
-    ll zr = factorialMod(n - r, x);
-    res = (res * inverseMod((fr * zr) % x, x)) % x;
-    return res;
-}
-
-
 
 int main()
 {
     fast;
     ll t;
     // setIO();
-    ll tno = 1;
-    ;
-    t = 1;
-    cin >> t;
-
-    while (t--)
+    // ll tno=1;
+    cin >> n;
+    vec.resize(n);
+    cin >> vec;
+    for (ll i = 0; i < 3; i++)
     {
-        cout << "Case " << tno++ << ": ";
-        string s;
-        ll p;
-        cin>>s>>p;
-        sort(all(s));
-        ll n=s.size();
-        map<ll,ll>mpp;
-        for(ll i=0;i<n;i++){
-            mpp[s[i]]++;
-        }
-        ll tot=factorialMod(n,M);
-        for(auto it:mpp){
-            ll k=it.second;
-            tot/=factorialMod(k,M);
-        }
-        if(p>tot) cout<<"Impossible"<<nn;
-        else{
-            p--;
-            string r=s;
-            while (next_permutation(all(s)) && p)
-            {
-
-                r=s;
-                p--;
-            }
-            cout<<r<<nn;
+        for (ll j = 0; j < n; j++)
+        {
+            ll x;
+            cin >> x;
+            tim[i][j] = x;
         }
     }
+    vl ans = {-1, -1, -1};
+    for (ll i = 0; i < n; i++)
+    {
+        for (ll p = 0; p < 3; p++)
+        {
+            for (ll q = 0; q < 3; q++)
+            {
+                if (p == q)
+                    continue;
+                ll j = (i + 1) % n;
+                ll cnt = 0;
+                while (check(i, j, p, q) == 0 && cnt < n)
+                {
+                    j++;
+                    j %= n;
+                    cnt++;
+                }
+                if (cnt == n)
+                    continue;
+                ll r = 0;
+                if ((p == 1 && q == 0) || (p == 0 && q == 1))
+                    r = 2;
+                else if ((p == 2 && q == 0) || (p == 0 && q == 2))
+                    r = 1;
+                ll k = j + 1;
+                k %= n;
+                cnt = 0;
+                while (check(j, k, q, r) == 0 && cnt < n)
+                {
+                    k++;
+                    k %= n;
+                    cnt++;
+                }
+                if (cnt == n)
+                    continue;
+                if (check(k, i, r, p) == 0)
+                    continue;
 
+                ans[p] = i + 1;
+                ans[q] = j + 1;
+                ans[r] = k + 1;
+                break;
+            }
+            if (ans[0] != -1)
+                break;
+        }
+        if (ans[0] != -1)
+            break;
+    }
+    if (ans[0] != -1)
+        cout << ans << nn;
+    else
+        cout << "impossible" << nn;
     return 0;
 }
