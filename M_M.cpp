@@ -225,10 +225,6 @@ using namespace io;
 const double EPS = 1e-9;
 const ll N = 2e5 + 10;
 const ll M = 1e9 + 7;
-ll n, m;
-ll ar[21][21];
-ll tar[21][21];
-vector<vl> ans;
 
 int main()
 {
@@ -236,69 +232,35 @@ int main()
     ll t;
     // setIO();
     // ll tno=1;;
-    cin >> n >> m;
     t = 1;
-    map<ll, pll> mpp, mpp2;
-    for (ll i = 0; i < n; i++)
-    {
-        for (ll j = 0; j < m; j++)
-        {
-            cin >> ar[i][j];
-            mpp[ar[i][j]] = {i, j};
-        }
-    }
-    for (ll i = 0; i < n; i++)
-    {
-        for (ll j = 0; j < m; j++)
-        {
-            cin >> tar[i][j];
-            mpp2[tar[i][j]] = {i, j};
-        }
-    }
-    for (ll i = 1; i <= n * m; i++)
-    {
-        ll tari = mpp2[i].first;
-        ll tarj = mpp2[i].second;
+    cin >> t;
 
-        ll nowi = mpp[i].first;
-        ll nowj = mpp[i].second;
-        
-        // deb(i);
-        // ll cnt = 20;
-        while (ar[tari][tarj] != i)
+    while (t--)
+    {
+        ll n, m;
+        cin >> n >> m;
+        vector<ll> a(n), b(m);
+        cin >> a >> b;
+        multiset<ll>st1,st2;
+        for(auto it:a) st1.insert(it);
+        for(auto it:b) st2.insert(it);
+        while (st1.size())
         {
-            auto it = lower_bound(ar[nowi], ar[nowi] + m, ar[tari][tarj]);
-            //lower bound on rows coz row based condition
-            if(it==ar[nowi]) break;
-            it--;
-            ll jj = (it)-ar[nowi];
-            // deb2(ar[nowi][jj],ar[tari][tarj]);
-            mpp[ar[nowi][jj]] = {tari, tarj};
-            mpp[ar[tari][tarj]] = {nowi, nowj};
-            swap(ar[nowi][jj], ar[tari][tarj]);
-            ans.push_back({nowi+1,jj+1,tari+1,tarj+1});
+            ll now=(*st1.begin());
+            auto it=st2.lower_bound(now);
+            if(it!=st2.begin()){
+                it--;
+                st2.erase(it);
+                st1.erase(st1.begin());
+            }
+            else break;
+            /* code */
         }
-        // for (ll i = 0; i < n; i++)
-        // {
-        //     for (ll j = 0; j < m; j++)
-        //     {
-        //         cout << ar[i][j] << " ";
-        //     }
-        //     cout << nn;
-        // }
-        // cout << nn;
-    }
-    // for (ll i = 0; i < n; i++)
-    // {
-    //     for (ll j = 0; j < m; j++)
-    //     {
-    //         cout << ar[i][j] << " ";
-    //     }
-    //     cout << nn;
-    // }
-    cout<<ans.size()<<nn;
-    for(auto it:ans){
-        cout<<it<<nn;
+        // deb2(st1,st2);
+        if(st1.size()) cout<<"No"<<nn;
+        else cout<<"Yes"<<nn;
+        
+
     }
 
     return 0;

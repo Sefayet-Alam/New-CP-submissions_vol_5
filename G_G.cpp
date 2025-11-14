@@ -224,113 +224,67 @@ using namespace io;
 #define PI acos(-1)
 const double EPS = 1e-9;
 const ll N = 2e5 + 10;
-const ll M = 1e9 + 7;
+const ll M = 2e18 + 7;
 
-ll tim[3][N];
-ll n;
-vector<ll> vec(N);
-
-bool check(ll i, ll j, ll a, ll b)
+ll check(ll st, ll a, ll k, ll m)
 {
-    i %= n, j %= n;
-    vector<pll> av(n), bv(n);
-    pll aa = {0, tim[a][i]};
-    pll bb = {0, tim[b][j]};
-    av[i] = aa;
-    bv[j] = bb;
-    for (ll k = 1; k < n; k++)
+    ll ret = 0;
+    ll y = 1;
+    st%=m;
+    while (1)
     {
-        pll nowa = {aa.second + vec[i], aa.second + vec[i] + tim[a][(i + 1) % n]};
-        pll nowb = {bb.second + vec[j], bb.second + vec[j] + tim[b][(j + 1) % n]};
-        i++;
-        i %= n;
-        j++;
-        j %= n;
-        av[i] = nowa;
-        bv[j] = nowb;
-        aa = nowa;
-        bb = nowb;
+        ret += a;
+        st = (st * k) % m;
+        y *= k;
+        if ((st + y > m) || st == 0)
+            return ret;
     }
-    for (ll i = 0; i < n; i++)
-    {
-        vector<pll> tmp = {av[i], bv[i]};
-        sort(all(tmp));
-        if (tmp[0].second > tmp[1].first)
-            return false;
-    }
-    return true;
+    return 0;
 }
-
 int main()
 {
     fast;
     ll t;
     // setIO();
-    // ll tno=1;
-    cin >> n;
-    vec.resize(n);
-    cin >> vec;
-    for (ll i = 0; i < 3; i++)
-    {
-        for (ll j = 0; j < n; j++)
-        {
-            ll x;
-            cin >> x;
-            tim[i][j] = x;
-        }
-    }
-    vl ans = {-1, -1, -1};
-    for (ll i = 0; i < n; i++)
-    {
-        for (ll p = 0; p < 3; p++)
-        {
-            for (ll q = 0; q < 3; q++)
-            {
-                if (p == q)
-                    continue;
-                ll j = (i + 1) % n;
-                ll cnt = 0;
-                while (check(i, j, p, q) == 0 && cnt < n)
-                {
-                    j++;
-                    j %= n;
-                    cnt++;
-                }
-                if (cnt == n)
-                    continue;
-                ll r = 0;
-                if ((p == 1 && q == 0) || (p == 0 && q == 1))
-                    r = 2;
-                else if ((p == 2 && q == 0) || (p == 0 && q == 2))
-                    r = 1;
-                ll k = j + 1;
-                k %= n;
-                cnt = 0;
-                while (check(j, k, q, r) == 0 && cnt < n)
-                {
-                    k++;
-                    k %= n;
-                    cnt++;
-                }
-                if (cnt == n)
-                    continue;
-                if (check(k, i, r, p) == 0)
-                    continue;
+    // ll tno=1;;
+    t = 1;
+    cin >> t;
 
-                ans[p] = i + 1;
-                ans[q] = j + 1;
-                ans[r] = k + 1;
-                break;
-            }
-            if (ans[0] != -1)
-                break;
+    while (t--)
+    {
+        ll n, k, m, a, b;
+        cin >> n >> k >> m >> a >> b;
+        if (n % m == 0)
+        {
+            cout << 0 << nn;
         }
-        if (ans[0] != -1)
-            break;
+        else if (k == 1)
+        {
+            cout << -1 << nn;
+        }
+        else
+        {
+
+            ll ans = LLONG_MAX;
+            ll cur = n;
+            ll curcost = 0;
+            while (cur)
+            {
+                ll cur2 = cur;
+                ll rem = cur % m;
+                if (rem == 0)
+                {
+                    ans = min(ans, curcost);
+                    break;
+                }
+                ans = min(ans, curcost + check(cur, a, k, m));
+                curcost += b;
+                cur /= k;
+            }
+            ans = min(ans, curcost);
+            cout << ans << nn;
+        }
     }
-    if (ans[0] != -1)
-        cout << ans << nn;
-    else
-        cout << "impossible" << nn;
+
     return 0;
 }

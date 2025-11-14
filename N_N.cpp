@@ -191,112 +191,141 @@ namespace io
         print(other...);
     }
 }
+using namespace io;
 
+/* Points tO CONSIDER
+    # RTE? -> check array bounds and constraints
+    -> check if u are dividing smth by 0
+    #TLE? -> thinks about binary search/ dp / optimization techniques
+    # WA?
+    -> overflow,reset global variables
+    -> Check corner cases
+    -> use Setpre for precision problems
 
-
-const ll N=2e5+10;
-const ll INF = 1e18, NINF = -1e18;
-
-/*
-RangeAdd (add x from l to r-1)
-RangeSum (Get sum from l to r-1)
-RangeMinm (Get minm from l to r-1)
-RangeMaxm (Get maxm from l to r-1)
-GetAlive (Get how many nodes from l to r-1 has values > 0 )
-RangeAssign (Assign x from l to r-1..Note that it can revive any dead nodes,
-if x>0 , then all nodes from l to r-1 will be revived... 
-Else if x<=0 all nodes from l to r-1 will be dead)
+    #Can't Get an idea?
+    -> think from different/simpler approaches
+    -> Think in reverse?
+    -> Read the problem statement again
+    -> Check the constraints again
+    -> Ignore unnecessary information, and use it to draw the problem in new ways.
+    -> Characterize the problem: Suppose I did find such a solution, what would it look like? what characteristics it would have? Can we toy around with such a solution so that it remains optimal?
+    -> Randomly guessing: Guess and try to prove false
+    -> Finding invariants: Check which properties don't change
+    -> Solving subtasks of the original problem and then trying to extend/generalize your solution.
+    -> bruteforce to find pattern
+    -> Making obvious lower and upper bounds, and proving they are constructible.
+    -> Fixing a parameter and then trying to maximise the result with respect to that fixed parameter.
+    -> Maybe take a deep breath and take a break
+    -> STRESS TESTING !!!!!!
 */
 
-struct SegTree {
-    struct item {ll s, lz, as, liv, mn, mx;};
-    ll sz; vector<item> t; const ll NOP = LLONG_MAX;
-
-    item mk(ll h){if(h>0)return{h,0,NOP,1,h,h};return{0,0,NOP,0,INF,NINF};}
-    item mrg(const item&a,const item&b){return{a.s+b.s,0,NOP,a.liv+b.liv,min(a.mn,b.mn),max(a.mx,b.mx)};}
-    void app_as(ll x,ll v,ll len){t[x].as=v;t[x].lz=0;if(v>0){t[x].s=v*len;t[x].liv=len;t[x].mn=t[x].mx=v;}else{t[x].s=0;t[x].liv=0;t[x].mn=INF;t[x].mx=NINF;}}
-    void app_ad(ll x,ll v,ll len){if(t[x].as!=NOP){app_as(x,t[x].as+v,len);return;}if(!t[x].liv)return;t[x].lz+=v;t[x].s+=v*t[x].liv;t[x].mn+=v;t[x].mx+=v;}
-    void psh(ll x,ll lx,ll rx){if(rx-lx==1||(t[x].as==NOP&&t[x].lz==0))return;ll m=lx+(rx-lx)/2;if(t[x].as!=NOP){app_as(2*x+1,t[x].as,m-lx);app_as(2*x+2,t[x].as,rx-m);t[x].as=NOP;}if(t[x].lz!=0){app_ad(2*x+1,t[x].lz,m-lx);app_ad(2*x+2,t[x].lz,rx-m);t[x].lz=0;}}
-    void pul(ll x){t[x]=mrg(t[2*x+1],t[2*x+2]);}
-    void bld(const vl&a,ll x,ll lx,ll rx){if(rx-lx==1){if(lx<a.size())t[x]=mk(a[lx]);return;}ll m=lx+(rx-lx)/2;bld(a,2*x+1,lx,m);bld(a,2*x+2,m,rx);pul(x);}
-    void r_add(ll l,ll r,ll v,ll x,ll lx,ll rx){if(lx>=r||rx<=l)return;if(lx>=l&&rx<=r&&t[x].mn+v>0){app_ad(x,v,rx-lx);return;}if(lx>=l&&rx<=r&&t[x].mx!=NINF&&t[x].mx+v<=0){app_as(x,0,rx-lx);return;}psh(x,lx,rx);if(rx-lx==1){t[x]=mk((t[x].liv>0?t[x].s:0)+v);return;}ll m=lx+(rx-lx)/2;r_add(l,r,v,2*x+1,lx,m);r_add(l,r,v,2*x+2,m,rx);pul(x);}
-    void r_asgn(ll l,ll r,ll v,ll x,ll lx,ll rx){if(lx>=r||rx<=l)return;if(lx>=l&&rx<=r){app_as(x,v,rx-lx);return;}psh(x,lx,rx);ll m=lx+(rx-lx)/2;r_asgn(l,r,v,2*x+1,lx,m);r_asgn(l,r,v,2*x+2,m,rx);pul(x);}
-    item qry(ll l,ll r,ll x,ll lx,ll rx){if(lx>=r||rx<=l)return{0,0,NOP,0,INF,NINF};if(lx>=l&&rx<=r)return t[x];psh(x,lx,rx);ll m=lx+(rx-lx)/2;return mrg(qry(l,r,2*x+1,lx,m),qry(l,r,2*x+2,m,rx));}
-public:
-    void build(const vl&a){sz=1;while(sz<a.size())sz<<=1;t.assign(2*sz,mk(0));bld(a,0,0,sz);}
-    void RangeAdd(ll l,ll r,ll v){if(l<r)r_add(l,r,v,0,0,sz);}
-    void RangeAssign(ll l,ll r,ll v){if(l<r)r_asgn(l,r,v,0,0,sz);}
-    ll RangeSum(ll l,ll r){return l<r?qry(l,r,0,0,sz).s:0;}
-    ll GetAlive(ll l,ll r){return l<r?qry(l,r,0,0,sz).liv:0;}
-    ll RangeMinm(ll l,ll r){if(l>=r)return 0;ll res=qry(l,r,0,0,sz).mn;return res==INF?0:res;}
-    ll RangeMaxm(ll l,ll r){if(l>=r)return 0;ll res=qry(l,r,0,0,sz).mx;return res==NINF?0:res;}
-}; // use l to r+1 to get/upd l to r
-
-vl g[N];
-ll h[N];
-ll in[N], out[N];
-ll timer;
-vl flath;
-void euler_tour(ll now, ll prev)
-{
-    in[now] = timer++;
-    for (auto child : g[now])
-    {
-        if (child != prev)
-            euler_tour(child, now);
-    }
-    out[now] = timer;
-}
-
-void solve()
-{
-    ll n;
-    cin >> n;
-    h[0] = INF;
-    for (ll i = 1; i <= n; i++)
-    {
-        ll sup;
-        cin >> h[i] >> sup;
-        g[sup].push_back(i);
-    }
-
-    timer = 0;
-    euler_tour(0, -1);
-
-    flath.assign(timer, INF);
-
-    for (ll i = 0; i <= n; i++)
-    {
-        flath[in[i]] = h[i];
-    }
-
-    SegTree st;
-    st.build(flath);
-
-    ll q;
-    cin >> q;
-    while (q--)
-    {
-        ll type;
-        cin >> type;
-        if (type == 1)
-        {
-            ll a, x;
-            cin >> a >> x;
-            st.RangeAdd(in[a] + 1, out[a], -x);
-        }
-        else
-        {
-            ll a;
-            cin >> a;
-            cout << st.GetAlive(in[a] + 1, out[a]) << nn;
-        }
-    }
+// CONSTANTS
+#define md 10000007
+#define PI acos(-1)
+const double EPS = 1e-9;
+const ll N = 2e5 + 10;
+const ll M = 1e9 + 7;
+ll n;
+vector<pll> vec(N), revec(N);
+ll func(ll i,ll j){
+    ll a1=abs(vec[i].first-vec[j].first);
+    ll a2=abs(vec[i].first-vec[j].second);
+    ll a3=abs(vec[i].second-vec[j].first);
+    ll a4=abs(vec[i].second-vec[j].second);
+    return max({a1,a2,a3,a4});
 }
 
 int main()
 {
     fast;
-    solve();
+    ll t;
+    // setIO();
+    // ll tno=1;;
+
+    
+    cin >> n;
+    set<pair<pll, ll>> ab, ba;
+    vec.resize(2*n);
+    revec.resize(2*n);
+    for (ll i = 0; i < 2 * n; i++)
+    {
+        ll x, y;
+        cin >> x >> y;
+        vec[i] = {x, y};
+        revec[i] = {y, x};
+        ab.insert({{x, y}, i});
+        ba.insert({{y, x}, i});
+    }
+    ll ans = 0;
+    while (ab.size() && ba.size())
+    {
+        auto a1 = (*ab.begin());
+        auto a2 = (*ab.rbegin());
+        auto a3 = (*ba.begin());
+        auto a4 = (*ba.rbegin());
+
+        vector<ll> nows;
+        nows.push_back(a1.second);
+        nows.push_back(a2.second);
+        nows.push_back(a3.second);
+        nows.push_back(a4.second);
+
+        sort(all(nows));
+        UNIQUE(nows);
+        
+        // deb(nows);
+        // for(auto it:nows){
+        //     deb(it);
+        // }
+        // cout<<nn<<nn<<nn;
+
+        ll sz = nows.size();
+        ll maxmatch = -1;
+        pll chosen = {-1, -1};
+
+        for (ll i = 0; i < sz; i++)
+        {
+            for (ll j = 0; j < sz; j++)
+            {
+                if(i==j) continue;
+                // deb2(nows[i],nows[j]);
+                ll nowmatch=func(nows[i],nows[j]);
+                // ll nowmatch = max({abs(ac.first - bc.second), abs(ac.second - bc.first), abs(ac.first - bc.first), abs(ac.second - bc.second)});
+                // deb(nowmatch);
+                if (nowmatch > maxmatch)
+                {
+                    maxmatch = nowmatch;
+                    chosen = {nows[i], nows[j]};
+                }
+            }
+        }
+        // cout<<nn<<nn;
+        if (maxmatch>-1)
+        {
+
+            ll i = chosen.first;
+            ll j = chosen.second;
+            // deb2(i, j);
+            ans += maxmatch;
+            if (ab.find({vec[i], i}) != ab.end())
+            {
+                ab.erase({vec[i], i});
+            }
+            if (ab.find({vec[j], j}) != ab.end())
+            {
+                ab.erase({vec[j], j});
+            }
+            if (ba.find({revec[i], i}) != ba.end())
+            {
+                ba.erase({revec[i], i});
+            }
+            if (ba.find({revec[j], j}) != ba.end())
+            {
+                ba.erase({revec[j], j});
+            }
+        }
+    }
+    cout << ans << nn;
+
     return 0;
 }

@@ -226,91 +226,185 @@ const double EPS = 1e-9;
 const ll N = 2e5 + 10;
 const ll M = 1e9 + 7;
 
-// Returns inversion count in arr[0..n-1]
-ll getInvCount(vl &v, ll n)
-{
-    ordered_set<pll> st;
-    ll invcount = 0;
-    for (ll i = 0; i < n; i++)
-    {
-        ll temp = st.order_of_key({v[i], -1});
-        temp = (ll)st.size() - temp;
-        invcount += temp;
-        st.insert({v[i], i});
-    }
-    return invcount;
-}
 
-vl calc(string s,string p){
-    ll n=s.size();
-    vector<ll>ret;
-    set<ll>pos[30];
-    for(ll i=0;i<n;i++){
-        ll nowch=s[i]-'a';
-        pos[nowch].insert(i);
+struct Node {
+    unordered_map<unsigned char, Node*> next;
+    bool isWord = false;
+    int cnt = 0; 
+    // number of words passing through this node (prefix count)
+};
+
+struct Trie {
+    Node* root = new Node();
+
+    // insert string
+    void insert(const string &s) {
+        Node* cur = root;
+        for (unsigned char c : s) {
+            if (!cur->next.count(c)) cur->next[c] = new Node();
+            cur = cur->next[c];
+            cur->cnt++;
+        }
+        cur->isWord = true;
     }
-    for(ll i=0;i<n;i++){
-        ll nowch=p[i]-'a';
-        ll cur=(*pos[nowch].begin());
-        ret.push_back(cur+1);
-        pos[nowch].erase(pos[nowch].begin());
+
+    // search string
+    bool search(const string &s) {
+        Node* cur = root;
+        for (unsigned char c : s) {
+            if (!cur->next.count(c)) return false;
+            cur = cur->next[c];
+        }
+        return cur->isWord;
     }
-    return ret;
-}
+
+    // erase string
+    bool erase(const string &s) {
+        return eraseHelper(root, s, 0);
+    }
+
+    // count how many strings start with prefix p
+    int startsWith(const string &p) {
+        Node* cur = root;
+        for (unsigned char c : p) {
+            if (!cur->next.count(c)) return 0;
+            cur = cur->next[c];
+        }
+        return cur->cnt + (cur->isWord ? 1 : 0);
+    }
+
+    // erase all strings that have prefix p
+    void erasePrefix(const string &p) {
+        Node* cur = root;
+        vector<Node*> path;
+        for (unsigned char c : p) {
+            if (!cur->next.count(c)) return;
+            path.push_back(cur);
+            cur = cur->next[c];
+        }
+        int removed = cur->cnt + (cur->isWord ? 1 : 0);
+        freeSubtree(cur);
+        unsigned char last = p.back();
+        path.back()->next.erase(last);
+        for (Node* node : path) node->cnt -= removed;
+    }
+
+    // return length of longest prefix of s that exists in Trie
+    int longestPrefix(const string &s) {
+        Node* cur = root;
+        int len = 0, best = 0;
+        for (unsigned char c : s) {
+            if (!cur->next.count(c)) break;
+            cur = cur->next[c];
+            len++;
+            if (cur->isWord) best = len;
+        }
+        return best;
+    }
+
+    // return lexicographically smallest word in Trie
+    string smallestWord() {
+        return dfsLex(root, true);
+    }
+
+    // return lexicographically largest word in Trie
+    string largestWord() {
+        return dfsLex(root, false);
+    }
+
+    // free entire trie
+    void clear() {
+        freeSubtree(root);
+        root = new Node();
+    }
+
+private:
+    void freeSubtree(Node* node) {
+        if (!node) return;
+        for (auto &p : node->next)
+            freeSubtree(p.second);
+        delete node;
+    }
+
+    bool eraseHelper(Node* cur, const string &s, int i) {
+        if (!cur) return false;
+        if (i == (int)s.size()) {
+            if (!cur->isWord) return false;
+            cur->isWord = false;
+            return true;
+        }
+        unsigned char c = s[i];
+        if (!cur->next.count(c)) return false;
+        bool erased = eraseHelper(cur->next[c], s, i + 1);
+        if (erased) {
+            cur->next[c]->cnt--;
+            if (cur->next[c]->cnt == 0 && !cur->next[c]->isWord) {
+                delete cur->next[c];
+                cur->next.erase(c);
+            }
+        }
+        return erased;
+    }
+
+    string dfsLex(Node* node, bool smallest, string prefix = "") {
+        if (!node) return "";
+        if (node->isWord && node->next.empty()) return prefix;
+        if (node->isWord) return prefix; // return first found word
+        vector<unsigned char> keys;
+        for (auto &p : node->next) keys.push_back(p.first);
+        if (smallest) sort(keys.begin(), keys.end());
+        else sort(keys.rbegin(), keys.rend());
+        for (unsigned char c : keys) {
+            string res = dfsLex(node->next[c], smallest, prefix + (char)c);
+            if (!res.empty()) return res;
+        }
+        return "";
+    }
+};
 
 int main()
 {
     fast;
     ll t;
     // setIO();
-    // ll tno=1;;
-    t = 1;
-    cin >> t;
-
-    while (t--)
+    // ll tno=1;
+    ll n;
+    cin >> n;
+    Trie tr1, tr2;
+    vector<string> vec;
+    for (ll i = 0; i < n; i++)
     {
-        ll n, m;
-        cin >> n >> m;
-        char g[n][m];
-        for(ll i=0;i<n;i++){
-            for(ll j=0;j<m;j++){
-                cin>>g[i][j];
+        string s;
+        cin >> s;
+        tr1.insert(s);
+        vec.push_back(s);
+    }
+    ll ans = 0;
+    for (ll i = 0; i < n; i++)
+    {
+        tr1.erase(vec[i]);
+        string now = "";
+        string p = vec[i];
+        bool f = 0;
+        for (ll j = 0; j < p.size(); j++)
+        {
+            now += p[j];
+            if (tr2.startsWith(now) && !tr1.startsWith(now))
+            {
+                f = 1;
+                ans-=tr2.startsWith(now);
+                tr2.erasePrefix(now);
+                tr2.insert(now);
+                ans++;
+                break;
             }
         }
-        ll ans=0;
-        bool f=0;
-        for(ll j=0;j<m/2;j++){
-            ll now=j;
-            ll othr=m-1-j;
-            string a="",b="";
-            for(ll i=0;i<n;i++) a+=g[i][now];
-            for(ll i=0;i<n;i++) b+=g[i][othr];
-            map<char,ll>mp1,mp2;
-            for(ll i=0;i<n;i++) mp1[a[i]]++;
-            for(ll i=0;i<n;i++) mp2[b[i]]++;
-            for(auto it:mp1){
-                if(it.second!=mp2[it.first]){
-                    f=1;
-                    break;
-                }
-            }
-            for(auto it:mp2){
-                if(it.second!=mp1[it.first]){
-                    f=1;
-                    break;
-                }
-            }
-            if(f) break;
-            vl vec1=calc(a,b);
-            vl vec2=calc(b,a);
-            // deb2(a,b);
-            // deb2(vec1,vec2);
-            ll ans1=getInvCount(vec1,n);
-            ll ans2=getInvCount(vec2,n);
-            ans+=min(ans1,ans2);
+        if (!f)
+        {
+            tr2.insert(now);
+            ans++;
         }
-        if(f) cout<<-1<<nn;
-        else cout<<ans<<nn;
+        cout << ans << nn;
     }
 
     return 0;

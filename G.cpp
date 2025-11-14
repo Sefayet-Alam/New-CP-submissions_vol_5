@@ -226,16 +226,6 @@ const double EPS = 1e-9;
 const ll N = 2e5 + 10;
 const ll M = 1e9 + 7;
 
-void GG(ll a,ll b, ll c, ll d, ll &p, ll &q)
-{
-    if (a < b && c > d)
-    {
-        p = q = 1;
-        return;
-    }
-    GG(d % c, c, b - (d / c) * a, a, q, p);
-    q += (d / c) * p;
-}
 int main()
 {
     fast;
@@ -247,11 +237,33 @@ int main()
 
     while (t--)
     {
-        ll a, b, c, d;
-        cin >> a >> b >> c >> d;
-        ll p, q;
-        GG(a,b,c,d,p,q);
-        cout<<q<<nn;
+        string s;
+        cin >> s;
+        ll a = 0;
+        ll b = 0;
+        ll ok = 1;
+        ll n = s.size();
+        for (ll i = 0; i < n; i++)
+        {
+            if (s[i] >= 'a' && s[i] <= 'z')
+            {
+                if (ok)
+                    a++;
+                b++;
+            }
+            else if (s[i] >= 'A' && s[i] <= 'Z')
+            {
+                if (ok)
+                    a++;
+                b++;
+            }
+            else
+            {
+                ok = 0;
+                b++;
+            }
+        }
+        cout << b << " " << a << nn;
     }
 
     return 0;

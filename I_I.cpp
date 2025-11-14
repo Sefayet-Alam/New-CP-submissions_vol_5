@@ -10,7 +10,7 @@ using namespace __gnu_pbds;
     cin.tie(0);                   \
     cout.tie(0);
 
-#define ll int
+#define ll long long
 #define SZ(a) (int)a.size()
 #define UNIQUE(a) (a).erase(unique(all(a)), (a).end())
 #define mp make_pair
@@ -193,178 +193,79 @@ namespace io
 }
 using namespace io;
 
+/* Points tO CONSIDER
+    # RTE? -> check array bounds and constraints
+    -> check if u are dividing smth by 0
+    #TLE? -> thinks about binary search/ dp / optimization techniques
+    # WA?
+    -> overflow,reset global variables
+    -> Check corner cases
+    -> use Setpre for precision problems
+
+    #Can't Get an idea?
+    -> think from different/simpler approaches
+    -> Think in reverse?
+    -> Read the problem statement again
+    -> Check the constraints again
+    -> Ignore unnecessary information, and use it to draw the problem in new ways.
+    -> Characterize the problem: Suppose I did find such a solution, what would it look like? what characteristics it would have? Can we toy around with such a solution so that it remains optimal?
+    -> Randomly guessing: Guess and try to prove false
+    -> Finding invariants: Check which properties don't change
+    -> Solving subtasks of the original problem and then trying to extend/generalize your solution.
+    -> bruteforce to find pattern
+    -> Making obvious lower and upper bounds, and proving they are constructible.
+    -> Fixing a parameter and then trying to maximise the result with respect to that fixed parameter.
+    -> Maybe take a deep breath and take a break
+    -> STRESS TESTING !!!!!!
+*/
+
 // CONSTANTS
 #define md 10000007
 #define PI acos(-1)
 const double EPS = 1e-9;
-const ll N = 5e5 + 10;
+const ll N = 2e5 + 10;
 const ll M = 1e9 + 7;
 
-vector<int> smallest_factor;
-vector<bool> prime;
-vector<int> primes;
-
-void sieve(int maximum)
-{
-    maximum = max(maximum, 2);
-    smallest_factor.assign(maximum + 1, 0);
-    prime.assign(maximum + 1, true);
-    prime[0] = prime[1] = false;
-    primes = {2};
-
-    for (int p = 2; p <= maximum; p += 2)
-    {
-        prime[p] = p == 2;
-        smallest_factor[p] = 2;
-    }
-
-    for (int p = 3; p * p <= maximum; p += 2)
-        if (prime[p])
-            for (int i = p * p; i <= maximum; i += 2 * p)
-                if (prime[i])
-                {
-                    prime[i] = false;
-                    smallest_factor[i] = p;
-                }
-
-    for (int p = 3; p <= maximum; p += 2)
-        if (prime[p])
-        {
-            smallest_factor[p] = p;
-            primes.push_back(p);
-        }
-}
-
-ll n;
-vector<ll> vec(N);
-
-vl divisors[N];
-
-void divisor_store()
-{
-    for (int i = 1; i < N; i++)
-    {
-        for (int j = i; j < N; j += i)
-        {
-            divisors[j].push_back(i);
-        }
-    }
-    for (ll i = 1; i < N; i++)
-    {
-        sort(all(divisors[i]), greater<ll>());
-    }
-}
-const ll O = 1420;
-
-ll dp[2][O];
-
-ll dp2[N];
-ll count(ll x)
-{
-    if (x == 0) return 0;
-    ll nowx = x;
-    ll ret = 0;
-    if (dp2[nowx] != -1)
-        return dp2[nowx];
-    while (x > 1 && smallest_factor[x] != 0)
-    {
-        x /= smallest_factor[x];
-        ret++;
-    }
-    if (x > 1) ret++;
-    return dp2[nowx] = ret;
-}
 
 int main()
 {
     fast;
     ll t;
+    // setIO();
+    // ll tno=1;;
     t = 1;
     cin >> t;
-    sieve(N);
-    divisor_store();
 
-    mem(dp2, -1);
     while (t--)
     {
+        ll n;
         cin >> n;
-        vec.resize(n);
-        cin >> vec;
+        vector<ll> a(n), b(n);
+        cin >> a >> b;
 
-        if (n == 1)
+        // map<ll, ll> mpp,mp2;
+        map<ll,ll>pos1,pos2;
+        
+        for (ll i = 0; i < n; i++)
         {
-            cout << 0 << nn;
-            continue;
+            // mp2[b[i]]++;
+            pos2[b[i]]=i;
         }
-
-        for (ll i = 0; i < 2; i++)
-        {
-            for (ll j = 0; j < O; j++)
-            {
-                dp[i][j] = INT_MAX;
+        ll ans=-1;
+        set<ll>stt;
+        for(ll i=0;i<n;i++){
+            ll maxm=-1;
+            if(stt.size()){
+                maxm=(*stt.rbegin());
             }
-        }
+            if(maxm<pos2[a[i]]){
 
-        ll curr = 0;
-        for (ll j = 0; j < SZ(divisors[vec[0]]); j++)
-        {
-            dp[curr][j] = count(vec[0] / divisors[vec[0]][j]);
-        }
-
-        for (ll i = 1; i < n - 1; i++)
-        {
-            curr = i % 2;
-            ll prev = (i - 1) % 2;
-            for(ll j = 0; j < O; j++) dp[curr][j] = INT_MAX;
-
-            ll prevcnt = SZ(divisors[vec[i - 1]]);
-            if(prevcnt == 0) continue;
-
-            vl suffprev(prevcnt + 1, INT_MAX);
-            for (ll k = prevcnt - 1; k >= 0; k--)
-            {
-                suffprev[k] = min(suffprev[k + 1], dp[prev][k]);
             }
-
-            ll pp = 0;
-            for (ll j = 0; j < SZ(divisors[vec[i]]); j++)
-            {
-                ll curdiv = divisors[vec[i]][j];
-                while (pp < prevcnt && divisors[vec[i - 1]][pp] > curdiv)
-                {
-                    pp++;
-                }
-                
-                if (pp < prevcnt)
-                {
-                    ll minprev = suffprev[pp];
-                    if (minprev != INT_MAX)
-                    {
-                        ll cost = count(vec[i] / curdiv);
-                        dp[curr][j] = cost + minprev;
-                    }
-                }
-            }
-        }
-
-        ll ans = INT_MAX;
-        ll lastidx = n - 2;
-        ll cons = divisors[vec[n - 1]][0];
-        curr = lastidx % 2;
-
-        for (ll j = 0; j < SZ(divisors[vec[lastidx]]); j++)
-        {
-            if (divisors[vec[lastidx]][j] <= cons)
-            {
-                ans = min(ans, dp[curr][j]);
-            }
+            else ans=max(ans,pos2[a[i]]);
+            stt.insert(pos2[a[i]]);
         }
         
-        if (ans == INT_MAX)
-        {
-            ans = 0;
-        }
-        cout << ans << nn;
+        cout<<ans+1<<nn;
     }
 
     return 0;

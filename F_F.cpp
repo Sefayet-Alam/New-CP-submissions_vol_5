@@ -223,96 +223,103 @@ using namespace io;
 #define md 10000007
 #define PI acos(-1)
 const double EPS = 1e-9;
-const ll N = 2e5 + 10;
-const ll M = 1e9 + 7;
+const ll N = 1e6 + 10;
+const ll M = 1e16 + 7;
 
-ll dp[N][2];
-bool func(ll rem, ll turn, ll a, ll b)
-{
-    if (rem == 0)
-        return 0;
-    ll ret = 0;
-    // if(dp[rem][turn]!=-1) return dp[rem][turn];
-    if (turn == 0)
+template <class T>
+struct BIT
+{ // 1-indexed
+    int n;
+    vector<T> t;
+    BIT(int _n)
     {
-        for (ll j = 1; j <= a; j++)
-        {
-            if (j <= rem)
-                ret |= !(func(rem - j, !turn, a, b));
-        }
+        n = _n;
+        t.assign(n, -M);
     }
-    else
+    T query(int i)
     {
-        for (ll j = 1; j <= b; j++)
-        {
-            if (j <= rem)
-                ret |= !(func(rem - j, !turn, a, b));
-        }
+        T ans = -M;
+        for (; i >= 1; i -= (i & -i))
+            ans = max(ans, t[i]);
+        return ans;
     }
-    return ret;
-}
+    void upd(int i, T val)
+    {
+        if (i <= 0)
+            return;
+        for (; i < n; i += (i & -i))
+            t[i] = max(t[i], val);
+    }
+    // void upd(int l, int r, T val) {
+    //     upd(l, val);
+    //     upd(r + 1, -val);
+    // }
+    // T query(int l, int r) {
+    //     return query(r) - query(l - 1);
+    // }
+};
+
 int main()
 {
     fast;
     ll t;
-    // setIO();
-    // ll tno=1;;
-    t = 1;
-    // for (ll i = 7; i <= 20; i++)
-    // {
-    //     for (ll a = 1; a <= 10; a++)
-    //     {
-    //         for (ll b = 1; b <= 10; b++)
-    //         {
 
-    //             ll ans = func(i, 0, a, b);
-    //             // ll ans2=1;
-    //             // ll dec=(i%(a+b));
-    //             // if(dec>a || dec==0) ans2=0;
-    //             ll ans2 = 1;
-    //             if (a < i)
-    //             {
-    //                 if(b>a){
-    //                     ans2=0;
-    //                 }
-    //                 else if(i%(a+1)==0 && a==b){
-    //                     ans2=0;
-    //                 }
-    //             }
-    //             // if(ans==0){
-    //             // deb(i);
-    //             // deb2(a,b);
-    //             // deb(ans);
-    //             // }
-    //             if (ans != ans2)
-    //             {
-    //                 deb(i);
-    //                 deb2(a, b);
-    //                 // deb(ans);
-    //                 deb2(ans, ans2);
-    //             }
-    //         }
-    //     }
-    // }
-    cin >> t;
-
-    while (t--)
+    ll n, m;
+    cin >> n >> m;
+    vector<pll> alls;
+    vector<ll> a(n + 1), b(m + 1);
+    for (ll i = 1; i <= n; i++)
     {
-        ll n;
-        cin>>n;
-        ll a,b;
-        cin>>a>>b;
-        if(a>=n) cout<<"Alice"<<nn;
-        else{
-            if(b>a){
-                cout<<"Bob"<<nn;
-            }
-            else if(a==b && n%(a+1)==0){
-                cout<<"Bob"<<nn;
-            }
-            else cout<<"Alice"<<nn;
+        cin >> a[i];
+        alls.push_back({a[i], i});
+    }
+    for (ll i = 1; i <= m; i++)
+    {
+        cin >> b[i];
+        alls.push_back({b[i], n + i});
+    }
+    sort(all(alls));
+    vector<ll> f(N,0);
+    ll cnt = 0;
+    for (auto it : alls)
+    {
+        if (it.second > n)
+        {
+            cnt++;
+        }
+        else
+        {
+            f[it.second] = cnt;
         }
     }
+    BIT<ll> bitt(N);
+    vector<ll> dp(N, 0);//at position i, dp[i] nos are sorted without operation
+    ll ans = M;
+
+    for (ll i = 1; i <= n; i++)
+    {
+        if (f[i] >= i - 1)
+        {
+            dp[i] = 1;//all previous are taken from b,only ith position is from a
+        }
+        else dp[i]=-M;
+        
+        if (a[i] > a[i - 1])
+        {
+            dp[i] = max(dp[i], dp[i - 1] + 1);
+        }
+        ll cur = f[i] - i + n;
+        dp[i] = max(dp[i], bitt.query(cur + 1) + 1);
+        if (n - i <= m - f[i])
+            ans = min(ans, n - dp[i]);
+        if(i>1) bitt.upd(f[i - 1] - (i - 1) + n, dp[i - 1]);
+    }
+    if (n <= m)
+        ans = min(ans, m);
+    if (ans > m)
+        cout << -1 << nn;
+    else
+        cout << ans << nn;
 
     return 0;
 }
