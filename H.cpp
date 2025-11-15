@@ -193,84 +193,154 @@ namespace io
 }
 using namespace io;
 
+/* Points tO CONSIDER
+    # RTE? -> check array bounds and constraints
+    -> check if u are dividing smth by 0
+    #TLE? -> thinks about binary search/ dp / optimization techniques
+    # WA?
+    -> overflow,reset global variables
+    -> Check corner cases
+    -> use Setpre for precision problems
+
+    #Can't Get an idea?
+    -> think from different/simpler approaches
+    -> Think in reverse?
+    -> Read the problem statement again
+    -> Check the constraints again
+    -> Ignore unnecessary information, and use it to draw the problem in new ways.
+    -> Characterize the problem: Suppose I did find such a solution, what would it look like? what characteristics it would have? Can we toy around with such a solution so that it remains optimal?
+    -> Randomly guessing: Guess and try to prove false
+    -> Finding invariants: Check which properties don't change
+    -> Solving subtasks of the original problem and then trying to extend/generalize your solution.
+    -> bruteforce to find pattern
+    -> Making obvious lower and upper bounds, and proving they are constructible.
+    -> Fixing a parameter and then trying to maximise the result with respect to that fixed parameter.
+    -> Maybe take a deep breath and take a break
+    -> STRESS TESTING !!!!!!
+*/
+
+// CONSTANTS
 #define md 10000007
 #define PI acos(-1)
 const double EPS = 1e-9;
 const ll N = 2e5 + 10;
 const ll M = 1e9 + 7;
-ll top[1000][1000];
-struct R
+
+map<ll, vpll> mpp;
+map<ll, ll> vis;
+vector<ll> vec(N);
+ll curans;
+ll n, m;
+void dfs(ll x)
 {
-    int x1, y1, x2, y2, z;
-};
+    vis[x] = 1;
+    // deb(x);
+    for (auto it : mpp[x])
+    {
+        // deb(it);
+        ll b = it.first;
+        ll c = it.second;
+        if (vis.find(b) != vis.end() && vis.find(c) == vis.end())
+        {
+            dfs(c);
+            curans++;
+        }
+    }
+}
+
 int main()
 {
     fast;
-    ll n;
-    cin >> n;
+    ll t;
+    // setIO();
+    // ll tno=1;;
+    t = 1;
+    cin >> t;
 
-    vector<R> a(n);
-    for (ll i = 0; i < n; i++)
+    while (t--)
     {
-        cin >> a[i].x1 >> a[i].y1 >> a[i].x2 >> a[i].y2 >> a[i].z;
-    }
-    sort(a.begin(), a.end(), [](const R &A, const R &B)
-    { return A.z < B.z; });
 
-    mem(top, 0);
-
-    for (auto r : a)
-    {
-        for (ll x = r.x1; x < r.x2; x++)
+        cin >> n >> m;
+        vec.resize(n);
+        mpp.clear();
+        vis.clear();
+        cin >> vec;
+        sort(all(vec));
+        for (auto it : vec)
         {
-            for (ll y = r.y1; y < r.y2; y++)
-            {
-                top[x][y] = r.z;
-            }
+            vis[it] = 1;
         }
-    }
-
-    ll ans = 0;
-
-    // horizontal 
-    for (ll y = 0; y <= 1000; y++)
-    {
-        bool running = false;
-        for (ll x = 0; x < 1000; x++)
+        for (ll i = 0; i < m; i++)
         {
-            ll up = (y == 1000 ? 0 : top[x][y]);
-            ll dn = (y == 0 ? 0 : top[x][y - 1]);
-            bool vis = (up != dn);
-            if (vis && !running)
-            {
-                ans++;
-                running = true;
-            }
-            if (!vis)
-                running = false;
+            ll x, y, z;
+            cin >> x >> y >> z;
+            mpp[x].push_back({y, z});
+            mpp[y].push_back({x, z});
         }
-    }
-
-    // vertical 
-    for (ll x = 0; x <= 1000; x++)
-    {
-        bool running = false;
-        for (ll y = 0; y < 1000; y++)
+        ll ans = vec.size();
+        for (ll i = 0; i < 100; i++)
         {
-            ll rt = (x == 1000 ? 0 : top[x][y]);
-            ll lf = (x == 0 ? 0 : top[x - 1][y]);
-            bool vis = (rt != lf);
-            if (vis && !running)
-            {
-                ans++;
-                running = true;
+            curans = 0;
+            for(auto it:vis){
+                dfs(it.first);
             }
-            if (!vis)
-                running = false;
+            ans+=curans;
+            if(curans==0) break;
         }
+        cout << ans << nn;
+        // cout<<nn<<nn;
     }
-
-    cout << ans << nn;
 
     return 0;
 }
+
+// int main()
+// {
+//     fast;
+//     ll t;
+//     // setIO();
+//     // ll tno=1;;
+//     t = 1;
+//     cin >> t;
+
+//     while (t--)
+//     {
+//         ll n, m;
+//         cin >> n >> m;
+//         map<pll, ll> mpp;
+//         set<ll>stt;
+//         for(ll i=0;i<n;i++){
+//             ll x;
+//             cin>>x;
+//             stt.insert(x);
+//         }
+//         for(ll i=0;i<m;i++){
+//             ll x,y,z;
+//             cin>>x>>y>>z;
+//             ll a=min(x,y);
+//             ll b=max(x,y);
+//             mpp[{a,b}]=z;
+//         }
+//         while (1)
+//         {
+//             ll newf=0;
+//             for(auto it:stt){
+//                 for(auto it2=stt.upper_bound(it);it2!=stt.end();it2++){
+//                     ll a=it;
+//                     ll b=(*it2);
+//                     if(mpp.find({a,b})!=mpp.end()){
+//                         ll c=mpp[{a,b}];
+//                         if(stt.find(c)==stt.end()){
+//                             newf=1;
+//                             stt.insert(c);
+//                         }
+//                     }
+//                 }
+//             }
+//             if(newf==0) break;
+//         }
+//         cout<<stt.size()<<nn;
+//     }
+
+//     return 0;
+// }

@@ -193,84 +193,87 @@ namespace io
 }
 using namespace io;
 
+/* Points tO CONSIDER
+    # RTE? -> check array bounds and constraints
+    -> check if u are dividing smth by 0
+    #TLE? -> thinks about binary search/ dp / optimization techniques
+    # WA?
+    -> overflow,reset global variables
+    -> Check corner cases
+    -> use Setpre for precision problems
+
+    #Can't Get an idea?
+    -> think from different/simpler approaches
+    -> Think in reverse?
+    -> Read the problem statement again
+    -> Check the constraints again
+    -> Ignore unnecessary information, and use it to draw the problem in new ways.
+    -> Characterize the problem: Suppose I did find such a solution, what would it look like? what characteristics it would have? Can we toy around with such a solution so that it remains optimal?
+    -> Randomly guessing: Guess and try to prove false
+    -> Finding invariants: Check which properties don't change
+    -> Solving subtasks of the original problem and then trying to extend/generalize your solution.
+    -> bruteforce to find pattern
+    -> Making obvious lower and upper bounds, and proving they are constructible.
+    -> Fixing a parameter and then trying to maximise the result with respect to that fixed parameter.
+    -> Maybe take a deep breath and take a break
+    -> STRESS TESTING !!!!!!
+*/
+
+// CONSTANTS
 #define md 10000007
 #define PI acos(-1)
 const double EPS = 1e-9;
 const ll N = 2e5 + 10;
 const ll M = 1e9 + 7;
-ll top[1000][1000];
-struct R
+
+ll func(ll v, ll x, ll y)
 {
-    int x1, y1, x2, y2, z;
-};
+    ll cur = v;
+    for (ll i = 0; i < x; i++)
+    {
+        if (cur <= 0)
+            return 0;
+        ll tomin = cur / y;
+        cur -= tomin;
+    }
+    return cur;
+}
 int main()
 {
     fast;
-    ll n;
-    cin >> n;
+    ll t;
+    // setIO();
+    // ll tno=1;;
+    t = 1;
+    cin >> t;
 
-    vector<R> a(n);
-    for (ll i = 0; i < n; i++)
+    while (t--)
     {
-        cin >> a[i].x1 >> a[i].y1 >> a[i].x2 >> a[i].y2 >> a[i].z;
-    }
-    sort(a.begin(), a.end(), [](const R &A, const R &B)
-    { return A.z < B.z; });
-
-    mem(top, 0);
-
-    for (auto r : a)
-    {
-        for (ll x = r.x1; x < r.x2; x++)
+        ll x, y, k;
+        cin >> x >> y >> k;
+        ll l = 1, r = 1e12;
+        ll ans = -1;
+        if (func(r, x, y) < k)
         {
-            for (ll y = r.y1; y < r.y2; y++)
+            cout << -1 << nn;
+            continue;
+        }
+        while (l <= r)
+        {
+            ll mid = l + (r - l) / 2;
+            ll now = func(mid, x, y);
+            if (now >= k)
             {
-                top[x][y] = r.z;
+                ans = mid;
+                r = mid - 1;
+            }
+            else
+            {
+                l = mid + 1;
             }
         }
+        cout << ans << nn;
     }
-
-    ll ans = 0;
-
-    // horizontal 
-    for (ll y = 0; y <= 1000; y++)
-    {
-        bool running = false;
-        for (ll x = 0; x < 1000; x++)
-        {
-            ll up = (y == 1000 ? 0 : top[x][y]);
-            ll dn = (y == 0 ? 0 : top[x][y - 1]);
-            bool vis = (up != dn);
-            if (vis && !running)
-            {
-                ans++;
-                running = true;
-            }
-            if (!vis)
-                running = false;
-        }
-    }
-
-    // vertical 
-    for (ll x = 0; x <= 1000; x++)
-    {
-        bool running = false;
-        for (ll y = 0; y < 1000; y++)
-        {
-            ll rt = (x == 1000 ? 0 : top[x][y]);
-            ll lf = (x == 0 ? 0 : top[x - 1][y]);
-            bool vis = (rt != lf);
-            if (vis && !running)
-            {
-                ans++;
-                running = true;
-            }
-            if (!vis)
-                running = false;
-        }
-    }
-
-    cout << ans << nn;
 
     return 0;
 }
