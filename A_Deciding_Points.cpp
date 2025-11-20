@@ -230,9 +230,9 @@ const ll M = 1e9 + 7;
 void setIO()
 {
 #ifndef ONLINE_JUDGE
-    freopen("input.txt", "r", stdin);
+    freopen("deciding_points_input.txt", "r", stdin);
 
-    freopen("output.txt", "w", stdout);
+    freopen("deciding_points_output.txt", "w", stdout);
 #endif // ONLINE_JUDGE
 }
 

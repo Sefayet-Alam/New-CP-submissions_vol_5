@@ -1,0 +1,309 @@
+#include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace std;
+using namespace __gnu_pbds;
+
+// VVI
+#define fast                      \
+    ios_base::sync_with_stdio(0); \
+    cin.tie(0);                   \
+    cout.tie(0);
+
+#define ll long long
+#define SZ(a) (int)a.size()
+#define UNIQUE(a) (a).erase(unique(all(a)), (a).end())
+#define mp make_pair
+#define mem(a, b) memset(a, b, sizeof(a))
+#define all(x) x.begin(), x.end()
+
+//Printings & debugging
+#define nn '\n'
+#define Setpre(n) cout << fixed << setprecision(n)
+#define deb(x) cout << #x << "=" << x << endl
+#define deb2(x, y) cout << #x << "=" << x << "," << #y << "=" << y << endl
+#define debug printf("I am here\n")
+
+
+/// INLINE FUNCTIONS
+inline ll GCD(ll a, ll b) { return b == 0 ? a : GCD(b, a % b); }
+inline ll LCM(ll a, ll b) { return a * b / GCD(a, b); }
+inline double logb(ll base, ll num) { return (double)log(num) / (double)log(base); }
+
+
+/// Data structures
+typedef unsigned long long ull;
+typedef pair<ll, ll> pll;
+typedef vector<ll> vl;
+typedef vector<pll> vpll;
+typedef vector<vl> vvl;
+template <typename T>
+using PQ = priority_queue<T>;
+template <typename T>
+using QP = priority_queue<T, vector<T>, greater<T>>;
+template <typename T>
+using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
+template <typename T> 
+using ordered_multiset = tree<T, null_type, less_equal<T>, rb_tree_tag, tree_order_statistics_node_update>;
+template <typename T, typename R>
+using ordered_map = tree<T, R, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
+template <typename T, typename R>
+using ordered_multimap = tree<T, R, less_equal<T>, rb_tree_tag, tree_order_statistics_node_update>;
+namespace io{
+    template<typename First, typename Second> ostream& operator << ( ostream &os, const pair<First, Second> &p ) { return os << p.first << " " << p.second; }
+    template<typename First, typename Second> ostream& operator << ( ostream &os, const map<First, Second> &mp ) { for( auto it : mp ) { os << it << endl;  } return os; }
+    template<typename First> ostream& operator << ( ostream &os, const vector<First> &v ) { bool space = false; for( First x : v ) { if( space ) os << " "; space = true; os << x; } return os; }
+    template<typename First> ostream& operator << ( ostream &os, const set<First> &st ) { bool space = false; for( First x : st ) { if( space ) os << " "; space = true; os << x; } return os; }
+    template<typename First> ostream& operator << ( ostream &os, const multiset<First> &st ) { bool space = false; for( First x : st ) { if( space ) os << " "; space = true; os << x; } return os; }
+    template<typename First, typename Second> istream& operator >> ( istream &is, pair<First, Second> &p ) { return is >> p.first >> p.second; }
+    template<typename First> istream& operator >> ( istream &is, vector<First> &v ) { for( First &x : v ) { is >> x; } return is; }
+    
+    long long fastread(){ char c; long long d = 1, x = 0; do c = getchar(); while( c == ' ' || c == '\n' ); if( c == '-' ) c = getchar(), d = -1; while( isdigit( c ) ){ x = x * 10 + c - '0'; c = getchar(); } return d * x; }
+    static bool sep = false;
+    using std::to_string;
+    string to_string( bool x ){ return ( x ? "true" : "false" ); }
+    string to_string( const string & s ){ return "\"" + s + "\""; }
+    string to_string( const char * s ){ return "\"" + string( s ) + "\""; }
+    string to_string ( const char & c ) { string s; s += c; return "\'" + s + "\'"; }
+    template<typename Type> string to_string( vector<Type> );
+    template<typename First, typename Second> string to_string( pair<First, Second> );
+    template<typename Collection> string to_string( Collection );
+    template<typename First, typename Second> string to_string( pair<First, Second> p ){ return "{" + to_string( p.first ) + ", " + to_string( p.second ) + "}"; }
+    template<typename Type> string to_string( vector<Type> v ) { bool sep = false; string s = "["; for( Type x: v ){ if( sep ) s += ", "; sep = true; s += to_string( x ); } s += "]"; return s; }
+    template<typename Collection> string to_string( Collection collection ) { bool sep = false; string s = "{"; for( auto x: collection ){ if( sep ) s += ", "; sep = true; s += to_string( x ); } s += "}"; return s; }
+    void print() { cerr << endl; sep = false; }
+    template <typename First, typename... Other> void print( First first, Other... other ) { if( sep ) cerr << " | "; sep = true; cerr << to_string( first ); print( other... ); }
+} using namespace io;
+
+/* Points tO CONSIDER
+    # RTE? -> check array bounds and constraints
+    -> check if u are dividing smth by 0
+    #TLE? -> thinks about binary search/ dp / optimization techniques
+    # WA? 
+    -> overflow,reset global variables
+    -> Check corner cases
+    -> use Setpre for precision problems
+
+    #Can't Get an idea?
+    -> think from different/simpler approaches
+    -> Think in reverse?
+    -> Read the problem statement again
+    -> Check the constraints again
+    -> Ignore unnecessary information, and use it to draw the problem in new ways.
+    -> Characterize the problem: Suppose I did find such a solution, what would it look like? what characteristics it would have? Can we toy around with such a solution so that it remains optimal?
+    -> Randomly guessing: Guess and try to prove false
+    -> Finding invariants: Check which properties don't change
+    -> Solving subtasks of the original problem and then trying to extend/generalize your solution.
+    -> bruteforce to find pattern
+    -> Making obvious lower and upper bounds, and proving they are constructible.
+    -> Fixing a parameter and then trying to maximise the result with respect to that fixed parameter.
+    -> Maybe take a deep breath and take a break 
+    -> STRESS TESTING !!!!!!
+*/
+
+// CONSTANTS
+#define md 10000007
+#define PI acos(-1)
+const double EPS = 1e-9;
+const ll N = 2e5 + 10;
+const ll M = 1e9 + 7;
+
+const ll maxnodes = 10005; // be careful!..print function uses memory!
+const ll inf = M;
+ll nodes = maxnodes, src, dest;
+ll dist[maxnodes], q[maxnodes], work[maxnodes];
+
+struct Edge
+{
+    ll to, rev;
+    ll f, cap;
+};
+
+vector<Edge> g[maxnodes];
+
+void addEdge(ll s, ll t, ll cap)
+{
+    Edge a = {t, g[t].size(), 0, cap};
+    Edge b = {s, g[s].size(), 0, 0};
+    g[s].push_back(a);
+    g[t].push_back(b);
+}
+
+bool dinic_bfs()
+{
+    fill(dist, dist + nodes, -1);
+
+    dist[src] = 0;
+    ll index = 0;
+    q[index++] = src;
+
+    for (ll i = 0; i < index; i++)
+    {
+        ll u = q[i];
+        for (ll j = 0; j < (ll)g[u].size(); j++)
+        {
+            Edge &e = g[u][j];
+            if (dist[e.to] < 0 && e.f < e.cap)
+            {
+                dist[e.to] = dist[u] + 1;
+                q[index++] = e.to;
+            }
+        }
+    }
+    return dist[dest] >= 0;
+}
+
+ll dinic_dfs(ll u, ll f)
+{
+    if (u == dest)
+        return f;
+
+    for (ll &i = work[u]; i < (ll)g[u].size(); i++)
+    {
+        Edge &e = g[u][i];
+
+        if (e.cap <= e.f)
+            continue;
+
+        if (dist[e.to] == dist[u] + 1)
+        {
+            ll flow = dinic_dfs(e.to, min(f, e.cap - e.f));
+            if (flow > 0)
+            {
+                e.f += flow;
+                g[e.to][e.rev].f -= flow;
+                return flow;
+            }
+        }
+    }
+    return 0;
+}
+
+ll maxFlow(ll _src, ll _dest)
+{
+    src = _src;
+    dest = _dest;
+    ll result = 0;
+    while (dinic_bfs())
+    {
+        fill(work, work + nodes, 0);
+        while (ll delta = dinic_dfs(src, inf))
+            result += delta;
+    }
+    return result;
+}
+
+ll n;
+bool isok(ll x, ll y)
+{
+    return (x >= 1 && x <= n && y >= 1 && y <= n);
+}
+vpll moves = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+
+int main()
+{
+    fast;
+    ll t;
+    // setIO();
+    // ll tno=1;;
+    t = 1;
+    cin >> t;
+
+    while (t--)
+    {
+        cin >> n;
+        
+        // Count occurrences of each number (1-9)
+        vector<ll> cnt(10, 0);
+        vector<vector<pll>> positions(10);
+        
+        ll grid[n + 1][n + 1];
+        for (ll i = 1; i <= n; i++)
+        {
+            for (ll j = 1; j <= n; j++)
+            {
+                cin >> grid[i][j];
+                cnt[grid[i][j]]++;
+                positions[grid[i][j]].push_back({i, j});
+            }
+        }
+        
+        bool valid = true;
+        
+        for (ll k = 1; k <= 8; k++)
+        {
+            if (cnt[k+1] == 0) continue;
+            
+            ll left_count = positions[k].size();
+            ll right_count = positions[k+1].size();
+            
+            if (left_count == 0 && right_count > 0) {
+                valid = false;
+                break;
+            }
+            
+            for(ll i = 0; i < maxnodes; i++){
+                g[i].clear();
+            }
+        
+            src = 0;
+            dest = left_count + right_count + 1;
+            nodes = dest + 2;
+            for (ll i = 1; i <= left_count; i++)
+            {
+                addEdge(src, i, 1);
+            }
+            
+
+            for (ll i = 1; i <= right_count; i++)
+            {
+                addEdge(left_count + i, dest, 1);
+            }
+            
+
+            for (ll left_idx = 0; left_idx < left_count; left_idx++)
+            {
+                ll i = positions[k][left_idx].first;
+                ll j = positions[k][left_idx].second;
+                ll left_node = left_idx + 1;
+                
+                for (auto &move : moves)
+                {
+                    ll ni = i + move.first;
+                    ll nj = j + move.second;
+                    
+                    if (isok(ni, nj) && grid[ni][nj] == k + 1)
+                    {
+                        for (ll right_idx = 0; right_idx < right_count; right_idx++)
+                        {
+                            if (positions[k+1][right_idx].first == ni && 
+                                positions[k+1][right_idx].second == nj)
+                            {
+                                ll right_node = left_count + right_idx + 1;
+                                addEdge(left_node, right_node, 1);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Check if we can match all k+1 positions
+            ll flow = maxFlow(src, dest);
+            if (flow < right_count)
+            {
+                valid = false;
+                break;
+            }
+        }
+        
+        if (valid)
+            cout << "YES" << nn;
+        else
+            cout << "NO" << nn;
+    }
+
+    return 0;
+}
+
+
