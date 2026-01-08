@@ -11,16 +11,32 @@ using namespace __gnu_pbds;
     cout.tie(0);
 
 #define ll long long
-#define SZ(a) (int)a.size()
+
+// Printings & debugging
 #define nn '\n'
-const ll M = 1e9 ;
+#define Setpre(n) cout << fixed << setprecision(n)
+#define deb(x) cout << #x << "=" << x << endl
+#define deb2(x, y) cout << #x << "=" << x << "," << #y << "=" << y << endl
+
+const double EPS = 1e-9;
+const ll M = 1e9;
+
 
 #define REP(i, n) for (int i = 0; i < (n); i++)
+// solution for eqn like 𝑓𝑛=∑𝑘𝑖=1𝑐𝑖∗𝑓𝑛−𝑖
+// matrix will be like:
+// 0 1 0 0
+// 0 0 1 0
+// 0 0 0 1
+//  .....
+// ck-1 ck-2 ck-3 ck-4 ....(k-1) th row
 
+// b:
+// f[0]=b[0], f[1]=b[1],... f[k-1]=b[k-1] ,...first k values are given
 struct Matrix
 {
     ll size;
-    ll a[12][12] = {0}; 
+    ll a[12][12] = {0};
     Matrix(int sz) : size(sz) {}
 
     Matrix operator*(const Matrix &other)
@@ -30,15 +46,15 @@ struct Matrix
         REP(j, size)
         REP(k, size)
         {
-            product.a[i][k] += (a[i][j] * other.a[j][k])%M;
-            product.a[i][k]%=M;
+            product.a[i][k] += (a[i][j] * other.a[j][k]) % M;
+            product.a[i][k] %= M;
         }
         return product;
     }
 };
 Matrix expo_power(Matrix a, ll k)
 {
-    int size=a.size;
+    int size = a.size;
     Matrix product(size);
     REP(i, size)
     product.a[i][i] = 1;
@@ -53,6 +69,32 @@ Matrix expo_power(Matrix a, ll k)
     }
     return product;
 }
+
+ll calc(ll n, vector<ll> b, vector<ll> c)
+{
+    // suppose f[n]=c[0]*f[n-1]+c[1]*f[n-2]+c[n-3]*f[n-3]...
+    // sequence is: b[0],b[1],b[2],...
+    // need to find the nth element
+    ll k = b.size();
+    if (n <= k)
+        return b[n - 1];
+    Matrix mat(k);
+    REP(i, k - 1)
+    {
+        mat.a[i][i + 1] = 1;
+    }
+    REP(i, k)
+    {
+        mat.a[k - 1][k - 1 - i] = c[i];
+    }
+    auto res = expo_power(mat, n - k);
+    long sum = 0;
+    REP(i, k)
+    {
+        sum = (sum + res.a[k - 1][i] * b[i]) % M;
+    }
+    return sum;
+}
 int main()
 {
     fast;
@@ -64,26 +106,15 @@ int main()
 
     while (t--)
     {
-        ll k;
-        cin>>k;
-        vector<ll>b(k);
-        REP(i,k) cin>>b[i];
-        Matrix mat(k);
-        REP(i, k - 1) mat.a[i][i + 1] = 1;
-        REP(i, k) cin >> mat.a[k - 1][k - 1 - i];
+        ll m;
+        cin>>m;
+        vector<ll>b(m),c(m);
+        for(ll i=0;i<m;i++) cin>>b[i];
+        for(ll i=0;i<m;i++) cin>>c[i];
         ll n;
         cin>>n;
-        if(n<=k) cout<<b[n-1]<<nn;
-        else{
-            auto res=expo_power(mat,n-k);
-            long sum = 0;
-            REP(i, k) sum = (sum + res.a[k - 1][i] * b[i]) % M;
-            cout << sum << endl;
-
-        }
-
+        cout<<calc(n,b,c)<<nn;
     }
 
     return 0;
 }
-

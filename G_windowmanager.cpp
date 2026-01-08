@@ -209,6 +209,8 @@ int main()
     ll n;
     cin >> n;
 
+
+    map<pair<string,int>,int>mpp;
     vector<R> a(n);
     for (ll i = 0; i < n; i++)
     {
@@ -273,4 +275,176 @@ int main()
     cout << ans << nn;
 
     return 0;
+}
+
+
+const ll MAX_N = 1e5+10;
+char s[MAX_N], pat[MAX_N];  // 1-indexed
+ll lps[MAX_N];     // lps[i] = longest proper prefix-suffix in i length's prefix
+
+void gen_lps(ll plen){
+    ll now;
+    lps[0] = lps[1] = now = 0;
+    for(ll i = 2; i <= plen; i++) {
+        while(now != 0 && pat[now+1] != pat[i]) now = lps[now];
+        if(pat[now+1] == pat[i]) lps[i] = ++now;
+        else lps[i] = now = 0;
+    }
+}
+
+ll KMP(ll slen, ll plen){
+    ll now = 0;
+    for(ll i = 1; i <= slen; i++) {
+        while(now != 0 && pat[now+1] != s[i]) now = lps[now];
+        if(pat[now+1] == s[i]) ++now;
+        else now = 0;
+        // now is the length of the longest prefix of pat, which
+        // ends as a substring of s in index i.
+        if(now == plen) return 1;
+    }
+    return 0;
+}
+// slen = length of s, plen = length of pat
+// call gen_lps(plen); to generate LPS (failure) array
+// call KMP(slen, plen) to find pat in s
+
+
+
+struct Node {
+    unordered_map<unsigned char, Node*> next;
+    bool isWord = false;
+    int cnt = 0; 
+    // number of words passing through this node (prefix count)
+};
+
+struct Trie {
+    Node* root = new Node();
+
+    // insert string
+    void insert(const string &s) {
+        Node* cur = root;
+        for (unsigned char c : s) {
+            if (!cur->next.count(c)) cur->next[c] = new Node();
+            cur = cur->next[c];
+            cur->cnt++;
+        }
+        cur->isWord = true;
+    }
+
+    // search string
+    bool search(const string &s) {
+        Node* cur = root;
+        for (unsigned char c : s) {
+            if (!cur->next.count(c)) return false;
+            cur = cur->next[c];
+        }
+        return cur->isWord;
+    }
+
+    // erase string
+    bool erase(const string &s) {
+        return eraseHelper(root, s, 0);
+    }
+
+    // count how many strings start with prefix p
+    int startsWith(const string &p) {
+        Node* cur = root;
+        for (unsigned char c : p) {
+            if (!cur->next.count(c)) return 0;
+            cur = cur->next[c];
+        }
+        return cur->cnt + (cur->isWord ? 1 : 0);
+    }
+
+    // erase all strings that have prefix p
+    void erasePrefix(const string &p) {
+        Node* cur = root;
+        vector<Node*> path;
+        for (unsigned char c : p) {
+            if (!cur->next.count(c)) return;
+            path.push_back(cur);
+            cur = cur->next[c];
+        }
+        int removed = cur->cnt + (cur->isWord ? 1 : 0);
+        freeSubtree(cur);
+        unsigned char last = p.back();
+        path.back()->next.erase(last);
+        for (Node* node : path) node->cnt -= removed;
+    }
+
+    // return length of longest prefix of s that exists in Trie
+    int longestPrefix(const string &s) {
+        Node* cur = root;
+        int len = 0, best = 0;
+        for (unsigned char c : s) {
+            if (!cur->next.count(c)) break;
+            cur = cur->next[c];
+            len++;
+            if (cur->isWord) best = len;
+        }
+        return best;
+    }
+
+    // return lexicographically smallest word in Trie
+    string smallestWord() {
+        return dfsLex(root, true);
+    }
+
+    // return lexicographically largest word in Trie
+    string largestWord() {
+        return dfsLex(root, false);
+    }
+
+    // free entire trie
+    void clear() {
+        freeSubtree(root);
+        root = new Node();
+    }
+
+private:
+    void freeSubtree(Node* node) {
+        if (!node) return;
+        for (auto &p : node->next)
+            freeSubtree(p.second);
+        delete node;
+    }
+
+    bool eraseHelper(Node* cur, const string &s, int i) {
+        if (!cur) return false;
+        if (i == (int)s.size()) {
+            if (!cur->isWord) return false;
+            cur->isWord = false;
+            return true;
+        }
+        unsigned char c = s[i];
+        if (!cur->next.count(c)) return false;
+        bool erased = eraseHelper(cur->next[c], s, i + 1);
+        if (erased) {
+            cur->next[c]->cnt--;
+            if (cur->next[c]->cnt == 0 && !cur->next[c]->isWord) {
+                delete cur->next[c];
+                cur->next.erase(c);
+            }
+        }
+        return erased;
+    }
+
+    string dfsLex(Node* node, bool smallest, string prefix = "") {
+        if (!node) return "";
+        if (node->isWord && node->next.empty()) return prefix;
+        if (node->isWord) return prefix; // return first found word
+        vector<unsigned char> keys;
+        for (auto &p : node->next) keys.push_back(p.first);
+        if (smallest) sort(keys.begin(), keys.end());
+        else sort(keys.rbegin(), keys.rend());
+        for (unsigned char c : keys) {
+            string res = dfsLex(node->next[c], smallest, prefix + (char)c);
+            if (!res.empty()) return res;
+        }
+        return "";
+    }
+};
+
+while(next_permutation(all(vec))){
+    
 }
