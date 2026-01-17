@@ -227,6 +227,8 @@ const ll N = 2e5 + 10;
 const ll M = 1e9 + 7;
 
 vector<pair<ll, char>> g[N];
+
+
 void dfs(int vertex, int par = -1)
 {
     for (auto child : g[vertex])

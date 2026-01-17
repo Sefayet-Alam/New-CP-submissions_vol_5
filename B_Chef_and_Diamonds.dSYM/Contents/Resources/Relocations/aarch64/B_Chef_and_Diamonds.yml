@@ -1,0 +1,17 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/sefayet/Desktop/Github/New-CP-submissions_vol_5/B_Chef_and_Diamonds'
+relocations:
+  - { offset: 0x177D7, size: 0x8, addend: 0x0, symName: __ZStL8__ioinit, symObjAddr: 0x719C1, symBinAddr: 0x100008000, symSize: 0x0 }
+  - { offset: 0x17DBB, size: 0x8, addend: 0x0, symName: __GLOBAL__sub_I_B_Chef_and_Diamonds.cpp, symObjAddr: 0x8A0, symBinAddr: 0x100000E00, symSize: 0x3C }
+  - { offset: 0x1868F, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x760, symBinAddr: 0x100000E40, symSize: 0x128 }
+  - { offset: 0x189AC, size: 0x8, addend: 0x0, symName: __ZN2io5printEv, symObjAddr: 0x60C, symBinAddr: 0x100000D6C, symSize: 0x84 }
+  - { offset: 0x189C4, size: 0x8, addend: 0x0, symName: __ZN2io5printEv, symObjAddr: 0x60C, symBinAddr: 0x100000D6C, symSize: 0x84 }
+  - { offset: 0x189E5, size: 0x8, addend: 0x0, symName: __ZN2io5printEv, symObjAddr: 0x60C, symBinAddr: 0x100000D6C, symSize: 0x84 }
+  - { offset: 0x18ACA, size: 0x8, addend: 0x0, symName: __ZN2io9to_stringB5cxx11ERKc, symObjAddr: 0x480, symBinAddr: 0x100000BE0, symSize: 0x18C }
+  - { offset: 0x19390, size: 0x8, addend: 0x0, symName: __ZN2io9to_stringB5cxx11EPKc, symObjAddr: 0x270, symBinAddr: 0x1000009D0, symSize: 0x210 }
+  - { offset: 0x19E75, size: 0x8, addend: 0x0, symName: __ZN2io9to_stringERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE, symObjAddr: 0x110, symBinAddr: 0x100000870, symSize: 0x160 }
+  - { offset: 0x1A493, size: 0x8, addend: 0x0, symName: __ZN2io9to_stringB5cxx11Eb, symObjAddr: 0xAC, symBinAddr: 0x10000080C, symSize: 0x64 }
+  - { offset: 0x1A706, size: 0x8, addend: 0x0, symName: __ZN2io8fastreadEv, symObjAddr: 0x8, symBinAddr: 0x100000768, symSize: 0xA4 }
+  - { offset: 0x1A9BE, size: 0x8, addend: 0x0, symName: __ZNKSt5ctypeIcE8do_widenEc, symObjAddr: 0x0, symBinAddr: 0x100000760, symSize: 0x8 }
+...
